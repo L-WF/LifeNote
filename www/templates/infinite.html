@@ -1,0 +1,12 @@
+<ion-view title="scroll">
+<ion-content>
+  <ion-list>
+ 
+    <ion-item ng-repeat="item in items track by $index">{{item}}</ion-item>  </ion-list>
+
+  <ion-infinite-scroll
+    on-infinite="loadMore()"
+    distance="1%">
+  </ion-infinite-scroll>
+</ion-content>
+</ion-view>
