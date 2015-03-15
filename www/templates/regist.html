@@ -1,34 +1,7 @@
 
     <ion-view view-title="Regist">
       <ion-content scroll=false>
-        <form role="form" name="registForm" novalidate>
         <div class="list">
-          <label class="item item-input item-stacked-label">
-            <span class="input-label">Username</span>
-            <i class="icon ion-checkmark"  style="float:right; padding-right:10px;" ng-show="registForm.txtUsername.$valid && nameUnique"></i>  
-            <input type="text" name="txtUsername" placeholder="Letters and numbers only !" maxlength="12" ng-model="registUser.username" ng-pattern="/^[A-Za-z0-9]+$/" required>
-            <!-- <span class="glyphicon glyphicon-ok form-control-feedback"
-                            ng-show="registForm.txtUsername.$valid && nameUnique"></span>  -->  
-          </label>
-          <label class="item item-input item-stacked-label">
-            <span class="input-label">Password</span>
-            <i class="icon ion-checkmark"  style="float:right; padding-right:10px;" ng-show="registForm.txtPassword.$valid"></i>  
-            <input type="password" name="txtPassword" placeholder="Letters and numbers only !" maxlength="12" ng-model="registUser.password" 
-            ng-pattern="/^[A-Za-z0-9]+$/" required>
-            <!-- <span class="glyphicon glyphicon-ok form-control-feedback"
-                            ng-show="registForm.txtPassword.$valid"></span>    -->
-          </label>
-          <label class="item item-input item-stacked-label">
-            <span class="input-label">Password</span>
-            <i class="icon ion-checkmark"  style="float:right; padding-right:10px;" 
-            ng-show="registForm.txtConPassword.$valid && (registUser.password == registUser.conPassword)"></i>  
-            <input type="password" name="txtConPassword" placeholder="Confirm your password !" maxlength="12" ng-model="registUser.conPassword" 
-            ng-pattern="/^[A-Za-z0-9]+$/" required>
-            <!-- <span class="glyphicon glyphicon-ok form-control-feedback"
-                            ng-show="registForm.txtConPassword.$valid && (registUser.password == registUser.conPassword)"></span>    -->
-          </label>
-        </div>
-        <!-- <div class="list">
           <label class="item item-input">
             <span class="input-label">Username</span>
             <input type="text" ng-model="user.username">
@@ -41,13 +14,11 @@
             <span class="input-label">Password</span>
             <input type="password" ng-model="user.password">
           </label>
-        </div> -->
+        </div>
         <div class="padding">
-          <button class="button button-block button-positive"  ng-disabled="registForm.$invalid || (nameUnique == false) || (registUser.password != registUser.conPassword)"  
-          ng-click="login()">
+          <button class="button button-block button-positive" ng-click="login()">
             Login
           </button>
         </div>
-        </form>
       </ion-content>
     </ion-view>
