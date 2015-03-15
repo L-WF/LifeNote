@@ -2,15 +2,17 @@ angular.module('starter.controllers', [])
 
 
 .controller('tabsCtrl', function($scope, $ionicTabsDelegate) {
+  /*$ionicTabsDelegate.$getByHandle('tabs').select(0)
   ionic.onGesture('dragleft', function(e) {
     $ionicTabsDelegate.$getByHandle('tabs').select(0)
   },document.querySelector('ion-tabs'));
   ionic.onGesture('dragright', function(e) {
     $ionicTabsDelegate.$getByHandle('tabs').select(1)
-  },document.querySelector('ion-tabs'));
+  },document.querySelector('ion-tabs'));*/
 })
 
 .controller('loginCtrl', function($scope, $state, $ionicTabsDelegate) {
+  $scope.loginUser = { username: 'lwf', password: "123" };
   $scope.login = function() {
     $state.go('app.playlists');
   };
@@ -18,15 +20,23 @@ angular.module('starter.controllers', [])
 
 
 .controller('registCtrl', function($scope, $state, $ionicTabsDelegate) {
-    $ionicTabsDelegate.$getByHandle('tabs').select(0)
+  //$ionicTabsDelegate.$getByHandle('tabs').select(0)
 
+  $scope.nameUnique = false;
+  $scope.registUser = { username: 'lwf123', password: "123", conPassword: "123" };
+  $scope.$watch('registUser.username', function(newValue, oldValue, scope){
+    if ($scope.registUser.username == 'lwf')
+      $scope.nameUnique = true;
+    else
+      $scope.nameUnique = false;
+  })
   $scope.login = function() {
     $state.go('app.playlists');
   };
 })
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
-  // Form data for the login modal
+  /*// Form data for the login modal
   $scope.loginData = {};
 
   // Create the login modal that we will use later
@@ -55,7 +65,7 @@ angular.module('starter.controllers', [])
     $timeout(function() {
       $scope.closeLogin();
     }, 1000);
-  };
+  };*/
 })
 
 .controller('PlaylistsCtrl', function($scope) {
@@ -81,7 +91,7 @@ angular.module('starter.controllers', [])
   //在进入的时候进行的操作，例如加载数据
   $scope.$on('$ionicView.enter', function() {
     $ionicLoading.show({
-      template: "<ion-spinner icon='ripple' class='spinner-positive'></ion-spinner>"
+      template: '<ion-spinner icon="android"></ion-spinner>'
     });
     $timeout(function() {
       $ionicLoading.hide();
@@ -89,7 +99,7 @@ angular.module('starter.controllers', [])
   });
 
   $scope.goIndex = function() {
-    $state.go('tabs.regist');
+    $state.go('tabs.login');
   }
 
 	$scope.action = function() {
@@ -101,7 +111,7 @@ angular.module('starter.controllers', [])
 
     $scope.show = function() {
     $ionicLoading.show({
-      template: "<ion-spinner icon='ripple' class='spinner-positive'></ion-spinner>"
+      template: '<ion-spinner icon="android"></ion-spinner>'
     });
     $timeout(function() {
       $ionicLoading.hide();
