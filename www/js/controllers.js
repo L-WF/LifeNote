@@ -11,31 +11,129 @@ angular.module('starter.controllers', [])
   },document.querySelector('ion-tabs'));*/
 })
 
-.controller('loginCtrl', function($scope, $state, $ionicTabsDelegate) {
-  $scope.loginUser = { username: 'lwf', password: "123" };
+.controller('loginCtrl', function($scope, $state, $ionicLoading, $http, $timeout, $rootScope) {
+  $scope.loginUser = { username: '', password: "" };
+  $scope.errorShow = false;
+  $scope.failShow = false;
+
   $scope.login = function() {
-    $state.go('app.playlists');
+    $ionicLoading.show({
+      template: '<ion-spinner icon="android"></ion-spinner>'
+    });
+    
+    $http.get('http://lwf1993.sinaapp.com/loginOrRegist/login.php?name='+$scope.loginUser.username+'&password='+$scope.loginUser.password)
+    .success(function(data) {
+      if (data == "error")
+      {
+        $scope.errorShow = true;
+        $timeout(function() {
+        $scope.errorShow = false;
+        }, 2000);
+      }
+      else if (data == "false")
+      {
+        $scope.failShow = true;
+        $timeout(function() {
+        $scope.failShow = false;
+        }, 2000);
+      }
+      else
+      {
+        $rootScope.userID = data[0].id;
+        $rootScope.username = data[0].username;
+        $state.go('app.playlists');
+      }
+    })
+    .error(function() {
+        $scope.errorShow = true;
+        $timeout(function() {
+        $scope.errorShow = false;
+        }, 2000);
+    })
+    .then(function() {
+      $ionicLoading.hide();
+    });
   };
 })
 
 
-.controller('registCtrl', function($scope, $state, $ionicTabsDelegate) {
+.controller('registCtrl', function($scope, $state, $http, $ionicPopup, $timeout, $ionicLoading, $rootScope) {
   //$ionicTabsDelegate.$getByHandle('tabs').select(0)
+  var usernameRegex = /^[A-Za-z0-9]+$/;
+
+  //控制”用户名重复“和”服务器问题“的显示与否
+  $scope.errorShow = false;
+  $scope.duplicateShow = false;
 
   $scope.nameUnique = false;
-  $scope.registUser = { username: 'lwf123', password: "123", conPassword: "123" };
+  $scope.registUser = { username: "", password: "", conPassword: "" };
+
   $scope.$watch('registUser.username', function(newValue, oldValue, scope){
-    if ($scope.registUser.username == 'lwf')
-      $scope.nameUnique = true;
-    else
-      $scope.nameUnique = false;
+    $scope.nameUnique = false;
+
+    if (Boolean(newValue) && usernameRegex.test(newValue))
+    {
+      $http.get('http://lwf1993.sinaapp.com/loginOrRegist/checkUnique.php?name='+newValue)
+      .success(function(data) {
+        if (data[0].count == "0")
+        {
+          $scope.duplicateShow = false;
+          $scope.nameUnique = true;
+        }
+        else if (data[0].count == "1")
+        {
+          $scope.duplicateShow = true;
+        }
+        else
+        {
+          $scope.errorShow = true;
+          $timeout(function() {
+          $scope.errorShow = false;
+          }, 2000);
+        }
+      })
+      .error(function() {
+          $scope.errorShow = true;
+          $timeout(function() {
+          $scope.errorShow = false;
+          }, 2000);
+      });
+    }
   })
-  $scope.login = function() {
-    $state.go('app.playlists');
+  $scope.regist = function() {
+    $ionicLoading.show({
+      template: '<ion-spinner icon="android"></ion-spinner>'
+    });
+    
+    $http.get('http://lwf1993.sinaapp.com/loginOrRegist/regist.php?name='+$scope.registUser.username+'&password='+$scope.registUser.password)
+    .success(function(data) {
+      if (data != "error")
+      {
+        $rootScope.userID = data[0].id;
+        $rootScope.username = data[0].username;
+        $state.go('app.playlists');
+      }
+      else
+      {
+        $scope.errorShow = true;
+        $timeout(function() {
+        $scope.errorShow = false;
+        }, 2000);
+      }
+    })
+    .error(function() {
+        $scope.errorShow = true;
+        $timeout(function() {
+        $scope.errorShow = false;
+        }, 2000);
+    })
+    .then(function() {
+      $ionicLoading.hide();
+    });
   };
 })
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $rootScope, $ionicPopup) {
   /*// Form data for the login modal
   $scope.loginData = {};
 
@@ -66,9 +164,23 @@ angular.module('starter.controllers', [])
       $scope.closeLogin();
     }, 1000);
   };*/
+  $scope.exit = function() {
+    var confirmPopup = $ionicPopup.confirm({
+        title: '<strong>EXIT</strong>',
+        template: 'Are you sure to exit?',
+        okText: 'yes',
+        cancelText: 'no'
+      });
+
+      confirmPopup.then(function (res) {
+        if (res) {
+            ionic.Platform.exitApp();
+        } 
+      });
+  }
 })
 
-.controller('PlaylistsCtrl', function($scope) {
+.controller('PlaylistsCtrl', function($scope, $rootScope) {
   $scope.playlists = [
     { title: 'Reggae', id: 1 },
     { title: 'Chill', id: 2 },

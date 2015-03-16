@@ -44,10 +44,14 @@
         </div> -->
         <div class="padding">
           <button class="button button-block button-positive"  ng-disabled="registForm.$invalid || (nameUnique == false) || (registUser.password != registUser.conPassword)"  
-          ng-click="login()">
+          ng-click="regist()">
             Login
           </button>
         </div>
         </form>
+        <div class="padding" style="text-align:center;">
+          <p><font color=red ng-show="errorShow">Server down ！</font></p>
+          <p><font color=red ng-show="duplicateShow">Duplicate username ！</font></p>
+        </div> 
       </ion-content>
     </ion-view>
