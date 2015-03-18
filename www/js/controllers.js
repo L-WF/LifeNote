@@ -11,6 +11,148 @@ angular.module('starter.controllers', [])
   },document.querySelector('ion-tabs'));*/
 })
 
+.controller('BudgetCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup) {
+
+  $scope.showAlert = function(title,text) {
+     var alertPopup = $ionicPopup.alert({
+       title: title,
+       template: text
+     });
+   };
+
+  $scope.getData = function() {
+    $http.get('http://lwf1993.sinaapp.com/type_budget/typeAndBudget.php?userID='+$rootScope.userID)
+      .success(function(data) {
+        if (data == "error")
+        {
+          $ionicLoading.hide();
+          $scope.showAlert("error","Request fail !");
+        }
+        else if (data == "empty")
+        {
+          $ionicLoading.hide();
+          $scope.showAlert("warning","Empty data !");
+        }
+        else
+        {
+          $scope.items = data;
+          $ionicLoading.hide();
+        }
+      })
+      .error(function() {
+        $ionicLoading.hide();
+        $scope.showAlert("error","Request fail !");
+      });
+  }
+
+  $scope.request = function(url) {
+    $ionicLoading.show({
+      template: '<ion-spinner icon="android"></ion-spinner>'
+    });
+    $http.get(url)
+      .success(function(data) {
+        if (data == "error")
+        {
+          $ionicLoading.hide();
+          $scope.showAlert("error","Request fail !");
+        }
+        else
+        {
+          $scope.getData();
+        }
+      })
+      .error(function() {
+        $ionicLoading.hide();
+        $scope.showAlert("error","Request fail !");
+      });
+  }
+
+  $scope.addType = function(isPay) {
+    $scope.newType = {};
+    var nameRegex = /[&#'";!！@$]/;
+    var myPopup = $ionicPopup.show({
+      template: '<input type="text"  maxlength="12" ng-model="newType.name" >',
+      title: '新增类型',
+      subTitle: '不支持特殊符号',
+      scope: $scope,
+      buttons: [
+        { text: '取消' },
+        {
+          text: '<b>提交</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            if (Boolean($scope.newType.name) == false || nameRegex.test($scope.newType.name)) {
+              //don't allow the user to close unless he enters wifi password
+              e.preventDefault();
+            } 
+            else {
+              $scope.request('http://lwf1993.sinaapp.com/type_budget/addType.php?typeName='+$scope.newType.name+'&isPay='+isPay+'&userID='+$rootScope.userID);
+            }
+          }
+        }
+      ]
+    });
+  }
+
+  $scope.deleteType = function(id, name) {
+    var confirmPopup = $ionicPopup.confirm({
+        title: '<strong>warning</strong>',
+        template: '确定要删除 '+name+ ' 吗？',
+        okText: '是',
+        cancelText: '否'
+      });
+      confirmPopup.then(function (res) {
+        if (res) {
+          $scope.request('http://lwf1993.sinaapp.com/type_budget/deleteType.php?typeID='+id);
+        } 
+      });
+  }
+
+  $scope.editBudget = function(id, amount, name) {
+    $scope.currentBudget = {};
+    $scope.currentBudget.amount = amount;
+    var budgetRegex = /^\d+(\.\d{2})?$/;
+    var myPopup = $ionicPopup.show({
+      template: '<input type="number"  maxlength="12" ng-model="currentBudget.amount" >',
+      title: '本月预算:'+name,
+      subTitle: '支持小数点后两位的精度',
+      scope: $scope,
+      buttons: [
+        { text: '取消' },
+        {
+          text: '<b>提交</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            if (!(Boolean($scope.currentBudget.amount) && budgetRegex.test($scope.currentBudget.amount))) {
+              //don't allow the user to close unless he enters wifi password
+              e.preventDefault();
+            } 
+            else {
+              $scope.request('http://lwf1993.sinaapp.com/type_budget/editBudget.php?typeID='+id+'&amount='+$scope.currentBudget.amount+'&userID='+$rootScope.userID);
+            }
+          }
+        }
+      ]
+    });
+  }
+
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
+
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      $ionicLoading.show({
+        template: '<ion-spinner icon="android"></ion-spinner>'
+      });
+      $scope.getData();
+    }
+  });
+})
+
 .controller('loginCtrl', function($scope, $state, $ionicLoading, $http, $timeout, $rootScope) {
   $scope.loginUser = { username: '', password: "" };
   $scope.errorShow = false;
@@ -83,6 +225,7 @@ angular.module('starter.controllers', [])
         else if (data[0].count == "1")
         {
           $scope.duplicateShow = true;
+          $scope.nameUnique = false;
         }
         else
         {
@@ -133,7 +276,7 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $rootScope, $ionicPopup) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $rootScope, $ionicPopup, $state) {
   /*// Form data for the login modal
   $scope.loginData = {};
 
@@ -164,6 +307,13 @@ angular.module('starter.controllers', [])
       $scope.closeLogin();
     }, 1000);
   };*/
+  $scope.logout = function() {
+    $rootScope.userID = "";
+    $rootScope.username = ""
+
+    $state.go("tabs.login");
+  }
+
   $scope.exit = function() {
     var confirmPopup = $ionicPopup.confirm({
         title: '<strong>EXIT</strong>',

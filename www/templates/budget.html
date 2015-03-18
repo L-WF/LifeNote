@@ -1,0 +1,34 @@
+<ion-view view-title="Budget">
+  <ion-content >
+	<div class="list">
+
+	  	<div class="item item-divider item-icon-right">
+			<b>收入</b>
+			<i class="icon ion-android-add-circle positive" ng-click="addType(0)"></i>
+	  	</div>
+
+	  	<a class="item item-icon-left item-button-right" ng-repeat="item in items" ng-show="{{item.isPay}} == 0">
+		  	<i class="icon ion-android-remove-circle positive" ng-click="deleteType({{item.id}},'{{item.typeName}}')"></i>
+		    {{item.typeName}}
+		    <button class="button button-positive" ng-click="editBudget({{item.id}},{{item.budget}},'{{item.typeName}}')" >
+	  			本月预算
+			</button>
+	  	</a>
+
+
+
+	  	<div class="item item-divider item-icon-right">
+			<b>支出</b>
+			<i class="icon ion-android-add-circle positive" ng-click="addType(1)"></i>
+	  	</div>
+
+	  	<a class="item item-icon-left item-button-right" ng-repeat="item in items" ng-show="{{item.isPay}} == 1" >
+		  	<i class="icon ion-android-remove-circle positive" ng-click="deleteType({{item.id}},'{{item.typeName}}')"></i>
+		    {{item.typeName}}
+		    <button class="button button-positive" ng-click="editBudget({{item.id}},{{item.budget}},'{{item.typeName}}')">
+	  			本月预算
+			</button>
+	  	</a>
+	</div>
+  </ion-content>
+</ion-view>

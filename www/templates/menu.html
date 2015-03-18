@@ -19,8 +19,9 @@
     </ion-header-bar>
     <ion-content>
       <ion-list>
-        <ion-item nav-clear menu-close href="#/app/search">
-          Search
+        <ion-item nav-clear menu-close class="item-icon-left"  href="#/app/budget">
+          <i class="icon ion-calculator positive"></i>
+          Budget
         </ion-item>
         <ion-item nav-clear menu-close href="#/app/browse">
           Browse
@@ -34,8 +35,8 @@
         <ion-item nav-clear menu-close href="#/app/infinite">
           infiniteScroll
         </ion-item>
-        <ion-item nav-clear menu-close class="item-icon-left" href="#/tabs/login">
-          <i class="icon ion-person"></i>
+        <ion-item nav-clear menu-close class="item-icon-left" ng-click="logout()">
+          <i class="icon ion-person positive"></i>
           Logout
         </ion-item>
       </ion-list>
