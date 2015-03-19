@@ -183,7 +183,7 @@ angular.module('starter.controllers', [])
       {
         $rootScope.userID = data[0].id;
         $rootScope.username = data[0].username;
-        $state.go('app.playlists');
+        $state.go('app.homePage');
       }
     })
     .error(function() {
@@ -254,7 +254,7 @@ angular.module('starter.controllers', [])
       {
         $rootScope.userID = data[0].id;
         $rootScope.username = data[0].username;
-        $state.go('app.playlists');
+        $state.go('app.homePage');
       }
       else
       {
@@ -330,18 +330,111 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('PlaylistsCtrl', function($scope, $rootScope) {
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
-})
+.controller('addRecordCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup) {
+  $scope.Para = {};
+  $scope.Para.incomeClass = "";
+  $scope.Para.payClass = "button-outline";
+  $scope.Para.isPay = 0;
+  $scope.Para.amount = "";
+  $scope.Para.selectedID = "";
+  $scope.incomeTypes = [];
+  $scope.payTypes = [];
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+  $scope.showAlert = function(title,text) {
+     var alertPopup = $ionicPopup.alert({
+       title: title,
+       template: text
+     });
+   };
+
+  $scope.getData = function() {
+    $http.get('http://lwf1993.sinaapp.com/type_budget/typeAndBudget.php?typeOnly=1&userID='+$rootScope.userID)
+      .success(function(data) {
+        if (data == "error")
+        {
+          $ionicLoading.hide();
+          $scope.showAlert("error","Request fail !");
+        }
+        else if (data == "empty")
+        {
+          $ionicLoading.hide();
+          $scope.showAlert("warning","Empty data !");
+        }
+        else
+        {
+          for (var i in data)
+          {
+            if (data[i].isPay == 0)
+              $scope.incomeTypes.push(data[i]);
+            else
+              $scope.payTypes.push(data[i]);
+          }
+          $scope.items = $scope.incomeTypes;
+          $ionicLoading.hide();
+        }
+      })
+      .error(function() {
+        $ionicLoading.hide();
+        $scope.showAlert("error","Request fail !");
+      });
+  }
+
+  $scope.request = function(url) {
+    $ionicLoading.show({
+      template: '<ion-spinner icon="android"></ion-spinner>'
+    });
+    $http.get(url)
+      .success(function(data) {
+        if (data == "error")
+        {
+          $ionicLoading.hide();
+          $scope.showAlert("error","Request fail !");
+        }
+        else
+        {
+          $scope.Para.amount = "";
+          $scope.Para.selectedID = "";
+          $ionicLoading.hide();
+          $scope.showAlert("success","操作成功 !");
+          
+        }
+      })
+      .error(function() {
+        $ionicLoading.hide();
+        $scope.showAlert("error","Request fail !");
+      });
+  }
+
+
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
+
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      $ionicLoading.show({
+        template: '<ion-spinner icon="android"></ion-spinner>'
+      });
+      $scope.getData();
+    }
+  });
+
+  $scope.changeType = function(isPay) {
+    if ($scope.Para.isPay == isPay)
+      return;
+    $scope.Para.selectedID = "";
+    $scope.Para.isPay = isPay;
+    $scope.Para.incomeClass = isPay == 0 ? "" : "button-outline";
+    $scope.Para.payClass = isPay == 1 ? "" : "button-outline";
+    $scope.items = isPay == 0 ? $scope.incomeTypes : $scope.payTypes;
+  }
+
+  $scope.submit = function() {
+    $scope.request('http://lwf1993.sinaapp.com/records/addRecord.php?amount='+$scope.Para.amount+'&typeID='+$scope.Para.selectedID+'&userID='+$rootScope.userID);
+  }
 })
 
 .controller('backdropCtrl', function($scope, $ionicBackdrop, $timeout, $ionicLoading, $ionicModal, $ionicPopover, $state) {

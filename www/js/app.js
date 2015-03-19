@@ -48,33 +48,23 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.browse', {
-    url: "/browse",
+  .state('app.homePage', {
+    url: "/homePage",
     views: {
       'menuContent': {
-        templateUrl: "templates/browse.html"
+        templateUrl: "templates/homePage.html"
       }
     }
   })
-    .state('app.playlists', {
-      url: "/playlists",
+    .state('app.addRecord', {
+      url: "/addRecord",
       views: {
         'menuContent': {
-          templateUrl: "templates/playlists.html",
-          controller: 'PlaylistsCtrl'
+          templateUrl: "templates/addRecord.html",
+          controller: 'addRecordCtrl'
         }
       }
     })
-
-  .state('app.single', {
-    url: "/playlists/:playlistId",
-    views: {
-      'menuContent': {
-        templateUrl: "templates/playlist.html",
-        controller: 'PlaylistCtrl'
-      }
-    }
-  })
 
   .state('app.backdrop',{
   	url: "/backdrop",
