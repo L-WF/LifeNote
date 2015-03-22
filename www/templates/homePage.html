@@ -1,34 +1,83 @@
-<ion-view view-title="Browse">
+<ion-view view-title="Home">
   <ion-content>
-  <ion-slide-box show-pager="true" does-continue="true">
-  	<ion-slide>
-	    <div class="card">
-		  	<div class="item item-divider item-button-right">
-		    	I'm a Header in a Card!
-		  	</div>
-		  	<div class="item">
-		    	<div class=" progress progress-striped " >
-					<div class="progress-bar  progress-bar-positive" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 50%;">
-		    			<span>110 / 11911111111111111111 </span>
-		  			</div>
-				</div>
-		  	</div>
+    <!-- <div class="{{Para.budgetLoading}}">
+	  	<div class="item item-divider">
+	    	Loading...
+	  	</div>
+	  	<div class="item" style="text-align:center">
+				<ion-spinner icon="android"></ion-spinner>
+	  	</div>
+	</div>
+    <div class="{{Para.budgetEmpty}}">
+	  	<div class="item item-divider">
+	    	暂无数据！
+	  	</div>
+	  	<div class="item">
+	    	<div class=" progress progress-striped " >
+				<div class="progress-bar  progress-bar-positive" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+	    			<span>100 / 100 </span>
+	  			</div>
+			</div>
+	  	</div>
+	</div> -->
+
+  	<div class="button-bar padding-left padding-right">
+			<a class="button button-full icon-right ion-calculator  button-positive" href="#/app/budget">预算</a>
+			<a class="button button-full icon-right ion-android-create  button-positive" href="#/app/addRecord">记录</a>
+			<a class="button button-full icon-right ion-clipboard  button-positive" href="#">报表</a>
+  	</div>
+  	<ion-slide-box show-pager="true" does-continue="true" auto-play="true" slide-interval="2000"  on-slide-changed="selectIndex($index)">
+
+	  	<ion-slide ng-repeat="item in budgetItems">
+		    <div class="card">
+			  	<div class="item item-divider item-button-right">
+			    	本月预算：{{item.typeName}}
+			  	</div>
+			  	<div class="item">
+			    	<div class=" progress progress-striped active" >
+						<div class="progress-bar  {{item.isPay==0?'progress-bar-success':'progress-bar-warning'}}"  style="width: {{item.proportion*100}}%;padding-top:4px">
+			    			<span>
+			    				<font color="black" size="4">{{item.used}} / {{item.budget}} </font>
+			    			</span>
+			  			</div>
+					</div>
+			  	</div>
+			</div>
+	  	</ion-slide>
+  	</ion-slide-box>
+
+<!--     <div class="{{Para.recordLoading}}">
+	  	<div class="item item-divider item-button-right">
+	    	Loading...
+	  	</div>
+	  	<div class="item" style="text-align:center">
+				<ion-spinner icon="android"></ion-spinner>
+	  	</div>
+	</div>
+    <div class="{{Para.recordEmpty}}">
+	  	<div class="item item-divider item-button-right">
+	    	暂无数据！
+	  	</div>
+	  	<div class="item" style="text-align:center">
+		<a class="button button-full icon-right ion-android-create  button-positive" href="#/app/addRecord">Write something !</a>
+	  	</div>
+	</div> -->
+
+	<div class="list">
+	<div class="card"  ng-repeat="item in recordItems">
+		<div class="item item-divider">
+		   {{item.time}}
 		</div>
-  	</ion-slide>
-  	<ion-slide>
-		<div class="card">
-		  	<div class="item item-divider">
-		    	I'm a Header in a Card!
-		  	</div>
-		  	<div class="item">
-		    	<div class=" progress progress-striped " >
-					<div class="progress-bar  progress-bar-positive" style="width: 50%;">
-		    			<span>110 / 11911111111111111111 </span>
-		  			</div>
-				</div>
-		  	</div>
+		<div class="item item-text-wrap" style="background-color:#{{item.isPay==0?'5cb85c':'f0ad4e'}};color:black">
+		   {{item.typeName}}：${{item.amount}}
 		</div>
-  	</ion-slide>
-  </ion-slide-box>
+	</div>
+	</div>
+  <!-- <ion-infinite-scroll
+  	ng-if="canInfinite()"
+    on-infinite="loadMore()"
+    distance="10%"
+    spinner = "android">
+  </ion-infinite-scroll> -->
   </ion-content>
 </ion-view>

@@ -11,6 +11,232 @@ angular.module('starter.controllers', [])
   },document.querySelector('ion-tabs'));*/
 })
 
+.controller('homeCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout, $ionicSlideBoxDelegate) {
+  $scope.Para = {};
+/*  $scope.Para.budgetLoading = "card";
+  $scope.Para.budgetEmpty = "card ng-hide";
+  $scope.Para.recordLoading = "card";
+  $scope.Para.recordEmpty = "card ng-hide";
+  $scope.Para.canInfinite = true;
+  $scope.Para.lastID = 0;*/
+  $scope.Para.budgetData = false;
+  $scope.Para.recordData = false;
+
+
+  $scope.selectIndex = function(index) {
+    if ( index == $ionicSlideBoxDelegate.slidesCount()-1 )
+    {
+      $timeout(function() {
+        if ($ionicSlideBoxDelegate.currentIndex() == $ionicSlideBoxDelegate.slidesCount()-1)
+          $ionicSlideBoxDelegate.slide(0);
+      },2000)
+    }
+  }
+  $scope.showAlert = function(title,text) {
+     var alertPopup = $ionicPopup.alert({
+       title: title,
+       template: text
+     });
+   };
+
+  $scope.getBudgetData = function() {
+    $http.get('http://lwf1993.sinaapp.com/type_budget/usedBudget.php?userID='+$rootScope.userID)
+      .success(function(data) {
+        if (data == "error")
+        {
+          //$scope.Para.budgetLoading = "card ng-hide";
+          //$scope.Para.budgetEmpty = "card";
+          $scope.budgetItems = [{"typeName":"暂无数据","used":0,"budget":0,"proportion":1}];
+          $ionicSlideBoxDelegate.update();
+          $scope.Para.budgetData = true;
+          if ($scope.Para.recordData == true)
+          {
+            $ionicLoading.hide();
+          }
+        }
+        else if (data == "empty")
+        {
+          //$scope.Para.budgetLoading = "card ng-hide";
+          //$scope.Para.budgetEmpty = "card";
+          $scope.budgetItems = [{"typeName":"暂无数据","used":0,"budget":0,"proportion":1}];
+          $ionicSlideBoxDelegate.update();
+          $scope.Para.budgetData = true;
+          if ($scope.Para.recordData == true)
+          {
+            $ionicLoading.hide();
+          }
+        }
+        else
+        {
+          //$scope.Para.budgetLoading = "card ng-hide";
+          //$scope.Para.budgetEmpty = "card ng-hide";
+          $scope.budgetItems = data;
+          $ionicSlideBoxDelegate.update();
+          $scope.Para.budgetData = true;
+          if ($scope.Para.recordData == true)
+          {
+            $ionicLoading.hide();
+          }
+        }
+      })
+      .error(function() {
+        //$scope.Para.budgetLoading = "card ng-hide";
+        //$scope.Para.budgetEmpty = "card";
+        $scope.budgetItems = [{"typeName":"暂无数据","used":0,"budget":0,"proportion":1}];
+        $ionicSlideBoxDelegate.update();
+        $scope.Para.budgetData = true;
+        if ($scope.Para.recordData == true)
+        {
+          $ionicLoading.hide();
+        }
+      });
+  }
+  $scope.getRecordData = function() {
+    var url = 'http://lwf1993.sinaapp.com/records/recentRecords.php?userID='+$rootScope.userID;
+    $http.get(url)
+      .success(function(data) {
+        if (data == "error")
+        {
+          //$scope.Para.recordLoading = "card ng-hide";
+          //$scope.Para.recordEmpty = "card";
+          $scope.recordItems = [{"typeName":"暂无数据","amount":"0.00","isPay":0,"time":"1111-11-11 11:11:11"}];
+          $scope.Para.recordData = true;
+          if ($scope.Para.budgetData == true)
+          {
+            $ionicLoading.hide();
+          }
+        }
+        else if (data == "empty")
+        {
+          //$scope.Para.recordLoading = "card ng-hide";
+          //$scope.Para.recordEmpty = "card";
+          $scope.recordItems = [{"typeName":"暂无数据","amount":"0.00","isPay":0,"time":"1111-11-11 11:11:11"}];
+          $scope.Para.recordData = true;
+          if ($scope.Para.budgetData == true)
+          {
+            $ionicLoading.hide();
+          }
+        }
+        else
+        {
+          //$scope.Para.recordLoading = "card ng-hide";
+          //$scope.Para.recordEmpty = "card ng-hide";
+          $scope.recordItems = data;
+
+          /*var count = 0;
+          for (var i in data)
+          {
+            if (data[i])
+            {
+              $scope.Para.lastID = data[i].id;
+              count++;
+            }
+          }
+          if (count == 5)
+            $scope.Para.canInfinite = true;*/
+          $scope.Para.recordData = true;
+          if ($scope.Para.budgetData == true)
+          {
+            $ionicLoading.hide();
+          }
+        }
+      })
+      .error(function() {
+        //$scope.Para.recordLoading = "card ng-hide";
+        //$scope.Para.recordEmpty = "card";
+        $scope.recordItems = [{"typeName":"暂无数据","amount":"0.00","isPay":0,"time":"1111-11-11 11:11:11"}];
+        $scope.Para.recordData = true;
+        if ($scope.Para.budgetData == true)
+        {
+          $ionicLoading.hide();
+        }
+      });
+  }
+
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
+
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      $ionicLoading.show({
+        template: '<ion-spinner icon="android"></ion-spinner>'
+      });
+      $scope.getRecordData();
+      $scope.getBudgetData();
+    }
+  });
+
+/*  $scope.loadMore = function() {
+
+    $scope.Para.canInfinite = false;
+    console.log("in");
+    var url = 'http://lwf1993.sinaapp.com/records/recentRecords.php?userID='+$rootScope.userID;
+    if ($scope.Para.lastID != 0)
+      url += '&lastID='+$scope.Para.lastID;
+    $http.get(url)
+      .success(function(data) {
+        console.log(data);
+        if (data == "error")
+        {
+          $scope.Para.canInfinite = true;
+        }
+        else if (data == "empty")
+        {
+        }
+        else
+        {
+          var count = 0;
+
+          if ($scope.Para.lastID == 0)  
+          {
+            $scope.recordItems = data;
+            for (var i in data)
+            {
+              if (data[i])
+              {
+                $scope.Para.lastID = data[i].id;
+                count++;
+              }
+            }
+          }            
+          else
+          {
+            for (var i in data)
+            {
+              if (data[i])
+              {
+                $scope.Para.lastID = data[i].id;
+                count++;
+
+              if ($scope.Para.lastID != 0)  $scope.recordItems.push(data[i]);
+              }
+            }
+          }
+          if (count == 5){
+            $scope.Para.canInfinite = true;
+          }
+        }
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+      })
+      .error(function() {
+        $scope.Para.canInfinite = true;
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+      });
+  };
+
+  $scope.$on('$stateChangeSuccess', function() {
+  });
+
+  $scope.canInfinite = function() {
+    return $scope.Para.canInfinite;
+  }*/
+
+})
+
 .controller('BudgetCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup) {
 
   $scope.showAlert = function(title,text) {
@@ -330,7 +556,7 @@ angular.module('starter.controllers', [])
   }
 })
 
-.controller('addRecordCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup) {
+.controller('addRecordCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout) {
   $scope.Para = {};
   $scope.Para.incomeClass = "";
   $scope.Para.payClass = "button-outline";
@@ -425,11 +651,17 @@ angular.module('starter.controllers', [])
   $scope.changeType = function(isPay) {
     if ($scope.Para.isPay == isPay)
       return;
+    $ionicLoading.show({
+      template: '<ion-spinner icon="android"></ion-spinner>'
+    });
     $scope.Para.selectedID = "";
     $scope.Para.isPay = isPay;
     $scope.Para.incomeClass = isPay == 0 ? "" : "button-outline";
     $scope.Para.payClass = isPay == 1 ? "" : "button-outline";
     $scope.items = isPay == 0 ? $scope.incomeTypes : $scope.payTypes;
+    setTimeout(function() {
+      $ionicLoading.hide();
+    }, 0);
   }
 
   $scope.submit = function() {
