@@ -34,7 +34,7 @@
 			    	本月预算：{{item.typeName}}
 			  	</div>
 			  	<div class="item">
-			    	<div class=" progress progress-striped" >
+			    	<div class=" progress progress-striped active" >
 						<div class="progress-bar  {{item.isPay==0?'progress-bar-success':'progress-bar-warning'}}"  style="width: {{item.proportion*100}}%;padding-top:4px">
 			    			<span>
 			    				<font color="black" size="4">{{item.used}} / {{item.budget}} </font>
@@ -73,10 +73,11 @@
 		</div>
 	</div>
 	</div>
-  <ion-infinite-scroll
+  <!-- <ion-infinite-scroll
+  	ng-if="canInfinite()"
     on-infinite="loadMore()"
-    distance="31%"
+    distance="10%"
     spinner = "android">
-  </ion-infinite-scroll>
+  </ion-infinite-scroll> -->
   </ion-content>
 </ion-view>
