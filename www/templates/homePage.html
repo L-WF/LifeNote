@@ -34,13 +34,19 @@
 			    	本月预算：{{item.typeName}}
 			  	</div>
 			  	<div class="item">
-			    	<div class=" progress progress-striped active" >
+			  		<div class="range">
+  <i class="icon ion-volume-low"></i>
+  <input type="range" name="volume" min="0" max="{{item.budget}}" value="{{item.used}}">
+  <i class="icon ion-volume-high"></i>
+</div>
+
+			    	<!-- <div class=" progress" >
 						<div class="progress-bar  {{item.isPay==0?'progress-bar-success':'progress-bar-warning'}}"  style="width: {{item.proportion*100}}%;padding-top:4px">
 			    			<span>
 			    				<font color="black" size="4">{{item.used}} / {{item.budget}} </font>
 			    			</span>
 			  			</div>
-					</div>
+					</div> -->
 			  	</div>
 			</div>
 	  	</ion-slide>

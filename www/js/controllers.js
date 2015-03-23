@@ -659,7 +659,7 @@ angular.module('starter.controllers', [])
     $scope.Para.incomeClass = isPay == 0 ? "" : "button-outline";
     $scope.Para.payClass = isPay == 1 ? "" : "button-outline";
     $scope.items = isPay == 0 ? $scope.incomeTypes : $scope.payTypes;
-    setTimeout(function() {
+    $timeout(function() {
       $ionicLoading.hide();
     }, 0);
   }

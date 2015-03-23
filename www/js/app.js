@@ -19,6 +19,41 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
     
   });
+
+
+  $ionicPlatform.registerBackButtonAction(function(e) {
+
+  e.preventDefault();
+
+  function showConfirm() {
+    var confirmPopup = $ionicPopup.confirm({
+        title: '<strong>EXIT</strong>',
+        template: 'Are you sure to exit?',
+        okText: 'yes',
+        cancelText: 'no'
+      });
+
+      confirmPopup.then(function (res) {
+        if (res) {
+            ionic.Platform.exitApp();
+        } 
+      });
+  };
+
+  if ( $location.path() == '/tabs/login' || 
+  	   $location.path() == '/tabs/regist' || 
+  	   $location.path() == '/app/homePage' ) 
+  {
+    showConfirm();
+  } 
+  else if($rootScope.$viewHistory.backView) 
+  {
+  	$rootScope.$viewHistory.backView.go();
+  }
+
+  return false;
+}, 101);
+
 })
 
 .config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
@@ -29,8 +64,6 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   $stateProvider
 
-
-  
   .state('app', {
     url: "/app",
     abstract: true,
