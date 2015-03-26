@@ -20,7 +20,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     
   });
 
-
+  //注册手机返回按钮的事件
   $ionicPlatform.registerBackButtonAction(function(e) {
 
   e.preventDefault();
@@ -90,15 +90,33 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     }
   })
-    .state('app.addRecord', {
-      url: "/addRecord",
-      views: {
-        'menuContent': {
-          templateUrl: "templates/addRecord.html",
-          controller: 'addRecordCtrl'
-        }
+  .state('app.addRecord', {
+    url: "/addRecord",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/addRecord.html",
+        controller: 'addRecordCtrl'
       }
-    })
+    }
+  })
+  .state('app.records', {
+    url: "/records",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/records.html",
+        controller: 'recordsCtrl'
+      }
+    }
+  })
+  .state('app.count', {
+    url: "/count",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/count.html",
+        controller: 'countCtrl'
+      }
+    }
+  })
 
   .state('app.backdrop',{
   	url: "/backdrop",

@@ -1,4 +1,4 @@
-<ion-view view-title="Record">
+<ion-view view-title="NewRecord">
   <ion-content>
     <div class="button-bar padding">
       <a class="button button-full {{Para.incomeClass}} button-positive" ng-click="changeType(0)">收入</a>
@@ -7,25 +7,26 @@
     <form role="form" name="recordForm" novalidate>
       <div class="list">
         <label class="item item-input">
-          <input type="text" placeholder="支持两位小数！" maxlength="12" ng-model="Para.amount" ng-pattern="/^\d+(\.\d{2})?$/" required>
+          <span class="input-label">数额</span>
+          <input type="number" placeholder="支持两位小数！" maxlength="12" ng-model="Para.amount" ng-pattern="/^\d+(\.\d{2})?$/" required>
         </label>
       </div>
-      <div>
     </form>
-    <div class="list">
-      <div class="item item-divider">
-        请选择类型
+    <div class="padding-top">
+      <div class="list">
+        <div class="item item-divider">
+          请选择类型
+        </div>
+
+        <ion-radio ng-repeat="item in items"
+                   ng-show = "item.isPay == {{Para.isPay}}"
+                   ng-value = "item.id"
+                   ng-model="Para.selectedID"
+                   >
+          {{ item.typeName }}
+        </ion-radio>
+
       </div>
-
-      <ion-radio ng-repeat="item in items"
-                 ng-show = "item.isPay == {{Para.isPay}}"
-                 ng-value = "item.id"
-                 ng-model="Para.selectedID"
-                 >
-        {{ item.typeName }}
-      </ion-radio>
-
-    </div>
       <button class="button button-full button-positive" ng-disabled="recordForm.$invalid || Para.selectedID == ''" ng-click="submit()">
         提交
       </button>

@@ -12,17 +12,10 @@ angular.module('starter.controllers', [])
 })
 
 .controller('homeCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout, $ionicSlideBoxDelegate) {
+
   $scope.Para = {};
-/*  $scope.Para.budgetLoading = "card";
-  $scope.Para.budgetEmpty = "card ng-hide";
-  $scope.Para.recordLoading = "card";
-  $scope.Para.recordEmpty = "card ng-hide";
-  $scope.Para.canInfinite = true;
-  $scope.Para.lastID = 0;*/
   $scope.Para.budgetData = false;
   $scope.Para.recordData = false;
-
-
   $scope.selectIndex = function(index) {
     if ( index == $ionicSlideBoxDelegate.slidesCount()-1 )
     {
@@ -169,71 +162,6 @@ angular.module('starter.controllers', [])
       $scope.getBudgetData();
     }
   });
-
-/*  $scope.loadMore = function() {
-
-    $scope.Para.canInfinite = false;
-    console.log("in");
-    var url = 'http://lwf1993.sinaapp.com/records/recentRecords.php?userID='+$rootScope.userID;
-    if ($scope.Para.lastID != 0)
-      url += '&lastID='+$scope.Para.lastID;
-    $http.get(url)
-      .success(function(data) {
-        console.log(data);
-        if (data == "error")
-        {
-          $scope.Para.canInfinite = true;
-        }
-        else if (data == "empty")
-        {
-        }
-        else
-        {
-          var count = 0;
-
-          if ($scope.Para.lastID == 0)  
-          {
-            $scope.recordItems = data;
-            for (var i in data)
-            {
-              if (data[i])
-              {
-                $scope.Para.lastID = data[i].id;
-                count++;
-              }
-            }
-          }            
-          else
-          {
-            for (var i in data)
-            {
-              if (data[i])
-              {
-                $scope.Para.lastID = data[i].id;
-                count++;
-
-              if ($scope.Para.lastID != 0)  $scope.recordItems.push(data[i]);
-              }
-            }
-          }
-          if (count == 5){
-            $scope.Para.canInfinite = true;
-          }
-        }
-        $scope.$broadcast('scroll.infiniteScrollComplete');
-      })
-      .error(function() {
-        $scope.Para.canInfinite = true;
-        $scope.$broadcast('scroll.infiniteScrollComplete');
-      });
-  };
-
-  $scope.$on('$stateChangeSuccess', function() {
-  });
-
-  $scope.canInfinite = function() {
-    return $scope.Para.canInfinite;
-  }*/
 
 })
 
@@ -667,6 +595,219 @@ angular.module('starter.controllers', [])
   $scope.submit = function() {
     $scope.request('http://lwf1993.sinaapp.com/records/addRecord.php?amount='+$scope.Para.amount+'&typeID='+$scope.Para.selectedID+'&userID='+$rootScope.userID);
   }
+})
+
+
+.controller('recordsCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout) {
+  $scope.Para = {};
+  $scope.Para.startTime = "";
+  $scope.Para.endTime = "";
+  $scope.Para.lastID = 0;
+  $scope.Para.canLoadMore = false;
+  $scope.Para.newData = 0;
+  $scope.Para.url = '';
+
+  $scope.incomeTypes = [{"id":"All","typeName":"全部","isPay":"0"},{"id":"None","typeName":"不显示","isPay":"0"}];
+  $scope.payTypes = [{"id":"All","typeName":"全部","isPay":"1"},{"id":"None","typeName":"不显示","isPay":"1"}];
+  $scope.Para.incomeSelected = $scope.incomeTypes[0];
+  $scope.Para.paySelected = $scope.payTypes[0];
+
+  $scope.deleteRecord = function(id) {
+    var confirmPopup = $ionicPopup.confirm({
+        title: '<strong>warning</strong>',
+        template: '确定要删除这一记录吗？',
+        okText: '是',
+        cancelText: '否'
+      });
+      confirmPopup.then(function (res) {
+        if (res) {
+          $http.get('http://lwf1993.sinaapp.com/records/deleteRecord.php?recordID='+id)
+            .success(function(data) {
+              if (data == "success")
+                $scope.getRecordData();
+            })
+        } 
+      });
+  }
+
+  $scope.selectDate = function($event,isEnd) {
+    var options = {
+        date: new Date(),
+        mode: 'date'
+    };
+    datePicker.show(options, function(date){
+        if(date != 'Invalid Date') {
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            var selected = '' + year +'-';
+            selected += month > 9 ? month+'-' : '0'+month+'-';
+            selected += day > 9 ? day : '0'+day;
+            if (isEnd == 1)
+            {
+              $scope.Para.endTime = selected;
+              if ($scope.Para.startTime > selected)
+                $scope.Para.startTime = '';
+            }
+            else
+            {
+              $scope.Para.startTime = selected;
+              if ($scope.Para.endTime < selected)
+                $scope.Para.endTime = '';
+            }
+        }
+    });
+    $event.stopPropagation(); 
+  }
+
+
+  $scope.getTypeData = function() {
+    $http.get('http://lwf1993.sinaapp.com/type_budget/typeAndBudget.php?typeOnly=1&userID='+$rootScope.userID)
+      .success(function(data) {
+        if (data == "error")
+        {
+        }
+        else if (data == "empty")
+        {
+        }
+        else
+        {
+          for (var i in data)
+          {
+            if (data[i].isPay == 0)
+              $scope.incomeTypes.push(data[i]);
+            else
+              $scope.payTypes.push(data[i]);
+          }
+  
+        }
+      })
+  }
+
+  $scope.getRecordData = function() {
+    $ionicLoading.show({
+      template: '<ion-spinner icon="android"></ion-spinner>'
+    });
+    $scope.Para.canLoadMore = false;
+
+    var url = 'http://lwf1993.sinaapp.com/records/records.php?userID='+$rootScope.userID;
+    if ($scope.Para.startTime != "" && $scope.Para.endTime != "")
+    {
+      url += "&startTime="+$scope.Para.startTime+"&endTime="+$scope.Para.endTime;
+    }
+    url += "&incomeSelected="+$scope.Para.incomeSelected.id+"&paySelected="+$scope.Para.paySelected.id;
+
+    $scope.Para.url = url;
+    
+    if ($scope.Para.incomeSelected.id == 'None' && $scope.Para.paySelected.id == 'None')
+    {
+      $scope.recordItems = [];
+      $ionicLoading.hide();
+      return;
+    }
+
+    var count = 0; //用来统计返回记录的条数，等于10，则说明可能还有数据可以获取
+    $http.get(url)
+      .success(function(data) {
+        if (data == "error")
+        {
+          $ionicLoading.hide();
+        }
+        else if (data == "empty")
+        {
+          $scope.recordItems = [];
+          $ionicLoading.hide();
+        }
+        else
+        {
+          $scope.recordItems = data;
+
+          for (var i in data)
+          {
+            if (data[i])
+            {
+              $scope.Para.lastID = data[i].id;
+              count++;
+            }
+          }
+          $ionicLoading.hide();
+        }
+      })
+      .error(function() {
+        $ionicLoading.hide();
+      })
+      .then(function(){
+        $timeout(function(){
+          if (count == 10)
+          {
+            $scope.Para.canLoadMore = true;
+            $scope.Para.newData = 1;
+          }
+        },0);
+      });
+  }
+
+  $scope.loadMore = function() {
+    if ($scope.Para.newData == 1)
+    {
+      $scope.Para.newData = 0;
+      $scope.$broadcast('scroll.infiniteScrollComplete');
+      return;
+    }
+    
+    var url = $scope.Para.url + '&lastID='+$scope.Para.lastID;
+
+    $http.get(url)
+      .success(function(data) {
+        if (data == "error")
+        {
+          $scope.$broadcast('scroll.infiniteScrollComplete');
+        }
+        else if (data == "empty")
+        {
+          $scope.Para.canLoadMore = false;
+          $scope.$broadcast('scroll.infiniteScrollComplete');
+        }
+        else
+        {
+          var count = 0;
+          for (var i in data)
+          {
+            if (data[i])
+            {
+              $scope.Para.lastID = data[i].id;
+              count++;
+              $scope.recordItems.push(data[i]);
+            }
+          }
+          if (count != 10)
+            $scope.Para.canLoadMore = false;
+          $scope.$broadcast('scroll.infiniteScrollComplete');
+        }
+      })
+      .error(function() {
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+      });
+  }
+
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
+
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      $scope.getTypeData(); 
+      $scope.getRecordData();
+    }
+  });
+
+
+})
+
+.controller('countCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout) {
 })
 
 .controller('backdropCtrl', function($scope, $ionicBackdrop, $timeout, $ionicLoading, $ionicModal, $ionicPopover, $state) {

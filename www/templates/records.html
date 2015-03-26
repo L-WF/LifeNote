@@ -1,0 +1,53 @@
+<ion-view view-title="Records">
+  <ion-content>
+        <div class="list">
+          <label class="item item-input item-select">
+            <div class="input-label">
+              收入类型
+            </div>
+            <select ng-model="Para.incomeSelected" ng-options="opt as opt.typeName for opt in incomeTypes">
+            </select>
+          </label>
+          <label class="item item-input item-select">
+            <div class="input-label">
+              支出类型
+            </div>
+            <select ng-model="Para.paySelected" ng-options="opt as opt.typeName for opt in payTypes">
+            </select>
+          </label>
+        <label class="item item-input" ng-click="selectDate($event,0)">
+          <span class="input-label">开始时间</span>
+          {{Para.startTime}}
+        </label>
+        <label class="item item-input" ng-click="selectDate($event,1)">
+          <span class="input-label">结束时间</span>
+          {{Para.endTime}}
+        </label>
+      </div>
+    <div >
+      <button class="button button-full button-positive" ng-disabled="Para.startTime == '' || Para.endTime == ''" ng-click="getRecordData()">
+        提交
+      </button>
+    </div>
+
+    <div class="list">
+      <div class="card"  ng-repeat="item in recordItems">
+        <div class="item item-divider item-icon-right">
+           {{item.time}}
+           <i class="icon ion-android-remove-circle positive" ng-click="deleteRecord({{item.id}})"></i>
+        </div>
+        <div class="item item-text-wrap" style="background-color:#{{item.isPay==0?'33cd5f':'f0b840'}};color:black">
+           {{item.typeName}}：${{item.amount}}
+        </div>
+      </div>
+    </div>
+
+    <ion-infinite-scroll
+      ng-if="Para.canLoadMore"
+      on-infinite="loadMore()"
+      distance="10%"
+      spinner = "android">
+    </ion-infinite-scroll>
+
+  </ion-content>
+</ion-view>
