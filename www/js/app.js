@@ -118,26 +118,6 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.backdrop',{
-  	url: "/backdrop",
-  	views: {
-  		'menuContent': {
-  			templateUrl: "templates/backdrop.html",
-  			controller: 'backdropCtrl'
-  		}
-  	}
-  })
-
-  .state('app.infinite',{
-  	url: "/infinite",
-  	views: {
-  		'menuContent': {
-  			templateUrl: "templates/infinite.html",
-  			controller: 'infiniteCtrl'
-  		}
-  	}
-  })
-
   
   .state('tabs', {
   	url: "/tabs",

@@ -1,0 +1,60 @@
+<ion-view view-title="Count">
+  <ion-content>
+        <div class="list">
+          <label class="item item-input item-select">
+            <div class="input-label">
+              收入类型
+            </div>
+            <select ng-model="Para.incomeSelected" ng-options="opt as opt.typeName for opt in incomeTypes">
+            </select>
+          </label>
+          <label class="item item-input item-select">
+            <div class="input-label">
+              支出类型
+            </div>
+            <select ng-model="Para.paySelected" ng-options="opt as opt.typeName for opt in payTypes">
+            </select>
+          </label>
+        <label class="item item-input" ng-click="selectDate($event,0)">
+          <span class="input-label">开始时间</span>
+          {{Para.startTime}}
+        </label>
+        <label class="item item-input" ng-click="selectDate($event,1)">
+          <span class="input-label">结束时间</span>
+          {{Para.endTime}}
+        </label>
+      </div>
+    <div >
+      <button class="button button-full button-positive" ng-disabled="Para.startTime == '' || Para.endTime == ''" ng-click="getData()">
+        提交
+      </button>
+    </div>
+
+    <div class="list">
+      <div class="card">
+        <div class="item item-divider item-icon-left">
+           <i class="icon ion-ios-plus-empty"></i>
+           收入<div style="float:right">${{Para.incomeCount}}</div>
+        </div>
+        <div class="item item-text-wrap item-icon-left" style="background-color:#{{item.isPay==0?'33cd5f':'f0b840'}};color:black"
+             ng-show="{{item.isPay == 0}}" ng-repeat="item in countItems">
+           <i class="icon ion-ios-plus-empty"></i>
+           {{item.typeName}}<div style="float:right">${{item.count}}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="item item-divider item-icon-left">
+           <i class="icon ion-ios-minus-empty"></i>
+           支出<div style="float:right">${{Para.payCount }}</div>
+        </div>
+        <div class="item item-text-wrap item-icon-left" style="background-color:#{{item.isPay==0?'33cd5f':'f0b840'}};color:black"
+             ng-show="{{item.isPay == 1}}" ng-repeat="item in countItems">
+           <i class="icon ion-ios-minus-empty"></i>
+           {{item.typeName}}<div style="float:right">${{item.count}}</div>
+        </div>
+      </div>
+    </div>
+
+  </ion-content>
+</ion-view>

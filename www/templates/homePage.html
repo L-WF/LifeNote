@@ -23,7 +23,7 @@
 
   	<div class="button-bar padding-left padding-right padding-top">
 			<a class="button button-full icon-right ion-calculator  button-positive" href="#/app/budget">预算</a>
-			<a class="button button-full icon-right ion-android-create  button-positive" href="#/app/addRecord">记录</a>
+			<a class="button button-full icon-right ion-compose  button-positive" href="#/app/addRecord">记录</a>
 			<a class="button button-full icon-right ion-clipboard  button-positive" href="#/app/count">报表</a>
   	</div>
   	<ion-slide-box show-pager="true" does-continue="true" auto-play="true" slide-interval="2000"  on-slide-changed="selectIndex($index)">
@@ -35,7 +35,10 @@
 			  	</div>
 			  	<div class="item" >
 			    	<div class=" progress" >
-						<div class="progress-bar  {{item.isPay==0?'progress-bar-success':'progress-bar-warning'}}"  style="width: {{item.proportion*100}}%;padding-top:4px">
+						<div class="progress-bar 
+						{{item.isPay==0?'progress-bar-success':'progress-bar-warning'}} 
+						{{item.proportion==1?'progress-bar-danger':''}}"  
+						style="width: {{item.proportion*100}}%;padding-top:4px">
 			    			<span>
 			    				<font color="black" size="4">{{item.used}} / {{item.budget}} </font>
 			    			</span>
@@ -69,7 +72,7 @@
 		   {{item.time}}
 		</div>
 		<div class="item item-text-wrap" style="background-color:#{{item.isPay==0?'33cd5f':'f0b840'}};color:black">
-		   {{item.typeName}}：${{item.amount}}
+		   {{item.typeName}}<div style="float:right">${{item.amount}}</div>
 		</div>
 	</div>
 	</div>

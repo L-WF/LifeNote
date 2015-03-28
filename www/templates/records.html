@@ -37,7 +37,7 @@
            <i class="icon ion-android-remove-circle positive" ng-click="deleteRecord({{item.id}})"></i>
         </div>
         <div class="item item-text-wrap" style="background-color:#{{item.isPay==0?'33cd5f':'f0b840'}};color:black">
-           {{item.typeName}}：${{item.amount}}
+           {{item.typeName}}<div style="float:right">${{item.amount}}</div>
         </div>
       </div>
     </div>

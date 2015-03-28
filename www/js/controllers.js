@@ -2,13 +2,6 @@ angular.module('starter.controllers', [])
 
 
 .controller('tabsCtrl', function($scope, $ionicTabsDelegate) {
-  /*$ionicTabsDelegate.$getByHandle('tabs').select(0)
-  ionic.onGesture('dragleft', function(e) {
-    $ionicTabsDelegate.$getByHandle('tabs').select(0)
-  },document.querySelector('ion-tabs'));
-  ionic.onGesture('dragright', function(e) {
-    $ionicTabsDelegate.$getByHandle('tabs').select(1)
-  },document.querySelector('ion-tabs'));*/
 })
 
 .controller('homeCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout, $ionicSlideBoxDelegate) {
@@ -37,8 +30,6 @@ angular.module('starter.controllers', [])
       .success(function(data) {
         if (data == "error")
         {
-          //$scope.Para.budgetLoading = "card ng-hide";
-          //$scope.Para.budgetEmpty = "card";
           $scope.budgetItems = [{"typeName":"暂无数据","used":0,"budget":0,"proportion":1}];
           $ionicSlideBoxDelegate.update();
           $scope.Para.budgetData = true;
@@ -49,8 +40,6 @@ angular.module('starter.controllers', [])
         }
         else if (data == "empty")
         {
-          //$scope.Para.budgetLoading = "card ng-hide";
-          //$scope.Para.budgetEmpty = "card";
           $scope.budgetItems = [{"typeName":"暂无数据","used":0,"budget":0,"proportion":1}];
           $ionicSlideBoxDelegate.update();
           $scope.Para.budgetData = true;
@@ -61,8 +50,6 @@ angular.module('starter.controllers', [])
         }
         else
         {
-          //$scope.Para.budgetLoading = "card ng-hide";
-          //$scope.Para.budgetEmpty = "card ng-hide";
           $scope.budgetItems = data;
           $ionicSlideBoxDelegate.update();
           $scope.Para.budgetData = true;
@@ -73,8 +60,6 @@ angular.module('starter.controllers', [])
         }
       })
       .error(function() {
-        //$scope.Para.budgetLoading = "card ng-hide";
-        //$scope.Para.budgetEmpty = "card";
         $scope.budgetItems = [{"typeName":"暂无数据","used":0,"budget":0,"proportion":1}];
         $ionicSlideBoxDelegate.update();
         $scope.Para.budgetData = true;
@@ -90,8 +75,6 @@ angular.module('starter.controllers', [])
       .success(function(data) {
         if (data == "error")
         {
-          //$scope.Para.recordLoading = "card ng-hide";
-          //$scope.Para.recordEmpty = "card";
           $scope.recordItems = [{"typeName":"暂无数据","amount":"0.00","isPay":0,"time":"1111-11-11 11:11:11"}];
           $scope.Para.recordData = true;
           if ($scope.Para.budgetData == true)
@@ -101,8 +84,6 @@ angular.module('starter.controllers', [])
         }
         else if (data == "empty")
         {
-          //$scope.Para.recordLoading = "card ng-hide";
-          //$scope.Para.recordEmpty = "card";
           $scope.recordItems = [{"typeName":"暂无数据","amount":"0.00","isPay":0,"time":"1111-11-11 11:11:11"}];
           $scope.Para.recordData = true;
           if ($scope.Para.budgetData == true)
@@ -112,21 +93,8 @@ angular.module('starter.controllers', [])
         }
         else
         {
-          //$scope.Para.recordLoading = "card ng-hide";
-          //$scope.Para.recordEmpty = "card ng-hide";
           $scope.recordItems = data;
 
-          /*var count = 0;
-          for (var i in data)
-          {
-            if (data[i])
-            {
-              $scope.Para.lastID = data[i].id;
-              count++;
-            }
-          }
-          if (count == 5)
-            $scope.Para.canInfinite = true;*/
           $scope.Para.recordData = true;
           if ($scope.Para.budgetData == true)
           {
@@ -162,7 +130,6 @@ angular.module('starter.controllers', [])
       $scope.getBudgetData();
     }
   });
-
 })
 
 .controller('BudgetCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup) {
@@ -431,41 +398,23 @@ angular.module('starter.controllers', [])
 })
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout, $rootScope, $ionicPopup, $state) {
-  /*// Form data for the login modal
-  $scope.loginData = {};
-
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
-
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };
-
-  // Perform the login action when the user submits the login form
-  $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
-
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
-  };*/
+  
   $scope.logout = function() {
-    $rootScope.userID = "";
-    $rootScope.username = ""
+    var confirmPopup = $ionicPopup.confirm({
+        title: '<strong>EXIT</strong>',
+        template: 'Are you sure to logout?',
+        okText: 'yes',
+        cancelText: 'no'
+      });
 
-    $state.go("tabs.login");
+      confirmPopup.then(function (res) {
+        if (res) {
+          $rootScope.userID = "";
+          $rootScope.username = ""
+
+          $state.go("tabs.login");
+        } 
+      });
   }
 
   $scope.exit = function() {
@@ -596,7 +545,6 @@ angular.module('starter.controllers', [])
     $scope.request('http://lwf1993.sinaapp.com/records/addRecord.php?amount='+$scope.Para.amount+'&typeID='+$scope.Para.selectedID+'&userID='+$rootScope.userID);
   }
 })
-
 
 .controller('recordsCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout) {
   $scope.Para = {};
@@ -803,133 +751,160 @@ angular.module('starter.controllers', [])
       $scope.getRecordData();
     }
   });
-
-
 })
 
 .controller('countCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout) {
-})
+  $scope.Para = {};
+  $scope.Para.startTime = "";
+  $scope.Para.endTime = "";
+  $scope.Para.url = '';
 
-.controller('backdropCtrl', function($scope, $ionicBackdrop, $timeout, $ionicLoading, $ionicModal, $ionicPopover, $state) {
+  $scope.incomeTypes = [{"id":"All","typeName":"全部","isPay":"0"},{"id":"None","typeName":"不显示","isPay":"0"}];
+  $scope.payTypes = [{"id":"All","typeName":"全部","isPay":"1"},{"id":"None","typeName":"不显示","isPay":"1"}];
+  $scope.Para.incomeSelected = $scope.incomeTypes[0];
+  $scope.Para.paySelected = $scope.payTypes[0];
 
-  $scope.items = [1,2,3];
-  $scope.refreshing = false;
-  $scope.editItem = { name: 'lwf' , password: '123'};
+  $scope.Para.incomeCount = 0.00;
+  $scope.Para.payCount = 0.00;
 
-  //在进入的时候进行的操作，例如加载数据
-  $scope.$on('$ionicView.enter', function() {
-    $ionicLoading.show({
-      template: '<ion-spinner icon="android"></ion-spinner>'
+
+  $scope.selectDate = function($event,isEnd) {
+    var options = {
+        date: new Date(),
+        mode: 'date'
+    };
+    datePicker.show(options, function(date){
+        if(date != 'Invalid Date') {
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            var selected = '' + year +'-';
+            selected += month > 9 ? month+'-' : '0'+month+'-';
+            selected += day > 9 ? day : '0'+day;
+            if (isEnd == 1)
+            {
+              $scope.Para.endTime = selected;
+              if ($scope.Para.startTime > selected)
+                $scope.Para.startTime = '';
+            }
+            else
+            {
+              $scope.Para.startTime = selected;
+              if ($scope.Para.endTime < selected)
+                $scope.Para.endTime = '';
+            }
+        }
     });
-    $timeout(function() {
-      $ionicLoading.hide();
-    }, 1000);
-  });
-
-  $scope.goIndex = function() {
-    $state.go('tabs.login');
+    $event.stopPropagation(); 
   }
 
-	$scope.action = function() {
-    $ionicBackdrop.retain();
-    $timeout(function() {
-      $ionicBackdrop.release();
-    }, 1000);
-  };
 
-    $scope.show = function() {
+  $scope.getTypeData = function() {
+    $http.get('http://lwf1993.sinaapp.com/type_budget/typeAndBudget.php?typeOnly=1&userID='+$rootScope.userID)
+      .success(function(data) {
+        if (data == "error")
+        {
+        }
+        else if (data == "empty")
+        {
+        }
+        else
+        {
+          for (var i in data)
+          {
+            if (data[i].isPay == 0)
+              $scope.incomeTypes.push(data[i]);
+            else
+              $scope.payTypes.push(data[i]);
+          }
+  
+        }
+      })
+  }
+
+  $scope.getData = function() {
     $ionicLoading.show({
       template: '<ion-spinner icon="android"></ion-spinner>'
     });
-    $timeout(function() {
-      $ionicLoading.hide();
-    }, 3000);
-  };
 
-  $scope.doRefresh = function() {
-    if ($scope.refreshing == false)
+    var url = 'http://lwf1993.sinaapp.com/count/count.php?userID='+$rootScope.userID;
+    if ($scope.Para.startTime != "" && $scope.Para.endTime != "")
     {
-      $scope.refreshing = true;
-      $timeout(function() {
-        $scope.items.push(1);
-        $scope.$broadcast('scroll.refreshComplete');
-        $scope.refreshing = false;
-      }, 2000);
+      url += "&startTime="+$scope.Para.startTime+"&endTime="+$scope.Para.endTime;
     }
-  };
+    url += "&incomeSelected="+$scope.Para.incomeSelected.id+"&paySelected="+$scope.Para.paySelected.id;
 
-  $ionicModal.fromTemplateUrl('my-modal.html', {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    modal.focusFirstInput = true;
-    $scope.modal = modal;
-  });
-  $scope.openModal = function() {
-    $scope.modal.show();
-  };
-  $scope.closeModal = function() {
-    $scope.modal.hide();
-  };
-  //Cleanup the modal when we're done with it!
-  $scope.$on('$destroy', function() {
-    $scope.modal.remove();
-  });
-  // Execute action on hide modal
-  $scope.$on('modal.hidden', function() {
-    // Execute action
-  });
-  // Execute action on remove modal
-  $scope.$on('modal.removed', function() {
-    // Execute action
-  });
+    $scope.Para.url = url;
+    
+    if ($scope.Para.incomeSelected.id == 'None' && $scope.Para.paySelected.id == 'None')
+    {
+      $scope.countItems = [];
+      $scope.Para.incomeCount = 0.00;
+      $scope.Para.payCount = 0.00;
 
+      $ionicLoading.hide();
+      return;
+    }
 
+    $http.get(url)
+      .success(function(data) {
+        if (data == "error")
+        {
+          $ionicLoading.hide();
+        }
+        else if (data == "empty")
+        {
+          $scope.countItems = [];
+          $scope.Para.incomeCount = 0.00;
+          $scope.Para.payCount = 0.00;
 
+          $ionicLoading.hide();
+        }
+        else
+        {
+          $scope.Para.incomeCount = 0.00;
+          $scope.Para.payCount = 0.00;
+          
+          for (var i in data)
+          {
+            if (data[i].isPay == 0)
+              $scope.Para.incomeCount += parseFloat(data[i].count);
+            else
+              $scope.Para.payCount += parseFloat(data[i].count);
+          }
+          $scope.countItems = data;
 
+          $ionicLoading.hide();
+        }
+      })
+      .error(function() {
+        $ionicLoading.hide();
+      });
+  }
 
-  // .fromTemplateUrl() method
-  $ionicPopover.fromTemplateUrl('my-popover.html', {
-    scope: $scope
-  }).then(function(popover) {
-    $scope.popover = popover;
-  });
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
 
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      var date = new Date();
+      var year = date.getFullYear();
+      var month = date.getMonth() + 1;
+      var day = date.getDate();
+      var selected = '' + year +'-';
+      selected += month > 9 ? month+'-' : '0'+month+'-';
+      $scope.Para.startTime = selected + "01";
+      $scope.Para.endTime = selected +  (day > 9 ? day : '0'+day);
 
-  $scope.openPopover = function($event) {
-    $scope.popover.show($event);
-  };
-  $scope.closePopover = function() {
-    $scope.popover.hide();
-  };
-  //Cleanup the popover when we're done with it!
-  $scope.$on('$destroy', function() {
-    $scope.popover.remove();
-  });
-  // Execute action on hide popover
-  $scope.$on('popover.hidden', function() {
-    // Execute action
-  });
-  // Execute action on remove popover
-  $scope.$on('popover.removed', function() {
-    // Execute action
-  });
-})
-
-
-
-.controller('infiniteCtrl', function($scope, $timeout) {
-  $scope.items = [1,2,3];
-  $scope.loadMore = function() {
-    $timeout(function() {
-      $scope.items.push($scope.items.length + 1);
-    $scope.$broadcast('scroll.infiniteScrollComplete');
-    }, 2000);
-  };
-
-  $scope.$on('$stateChangeSuccess', function() {
-    $scope.loadMore();
+      $scope.getTypeData(); 
+      $scope.getData();
+    }
   });
 })
+
 
 ;
