@@ -319,7 +319,6 @@ angular.module('starter.controllers', [])
   };
 })
 
-
 .controller('registCtrl', function($scope, $state, $http, $ionicPopup, $timeout, $ionicLoading, $rootScope) {
   //$ionicTabsDelegate.$getByHandle('tabs').select(0)
   var usernameRegex = /^[A-Za-z0-9]+$/;
@@ -542,7 +541,7 @@ angular.module('starter.controllers', [])
   }
 
   $scope.submit = function() {
-    $scope.request('http://lwf1993.sinaapp.com/records/addRecord.php?amount='+$scope.Para.amount+'&typeID='+$scope.Para.selectedID+'&userID='+$rootScope.userID);
+    $scope.request('http://lwf1993.sinaapp.com/records/addRecord.php?amount='+$scope.Para.amount+'&typeID='+$scope.Para.selectedID+'&userID='+$rootScope.userID+'&isPay='+$scope.Para.isPay);
   }
 })
 
@@ -767,6 +766,8 @@ angular.module('starter.controllers', [])
   $scope.Para.incomeCount = 0.00;
   $scope.Para.payCount = 0.00;
 
+  $scope.Para.showSecondContainer = true;
+
 
   $scope.selectDate = function($event,isEnd) {
     var options = {
@@ -820,6 +821,177 @@ angular.module('starter.controllers', [])
   
         }
       })
+  }
+
+  $scope.getChartsData = function() {
+    $scope.Para.showSpinner = true;
+    $scope.Para.income_pie = [];
+    $scope.Para.pay_pie = [];
+    $scope.Para.income_line = [];
+    $scope.Para.pay_line = [];
+    for (var i in $scope.countItems)
+    {
+      var item = {};
+      item.name = $scope.countItems[i].typeName;
+      item.y = parseFloat($scope.countItems[i].count);
+      if ($scope.countItems[i].isPay == 0)
+        $scope.Para.income_pie.push(item);
+      else
+        $scope.Para.pay_pie.push(item);
+
+      if ($scope.Para.income_pie == []) 
+        $scope.Para.income_pie = [{"name":"empty","y":100}];
+      if ($scope.Para.pay_pie == []) 
+        $scope.Para.pay_pie = [{"name":"empty","y":100}];
+    }
+
+    $http.get('http://lwf1993.sinaapp.com/count/countForLine.php?userID='+$rootScope.userID+"&startTime="+$scope.Para.startTime+"&endTime="+$scope.Para.endTime)
+      .success(function(data) {
+        if (data != "error" && data != "empty")
+        {
+          var incomeSum = 0.00;
+          var paySum = 0.00;
+          for (var i in data)
+          {
+            incomeSum += parseFloat(data[i].income);
+            paySum += parseFloat(data[i].pay);
+            $scope.Para.income_line.push(incomeSum);
+            $scope.Para.pay_line.push(paySum);
+          }
+        }
+      })
+      .then(function() {
+        if ($scope.Para.income_line == []) 
+          $scope.Para.income_line = [0];
+        if ($scope.Para.pay_line == []) 
+          $scope.Para.pay_line = [0];
+
+        $scope.Para.showSpinner = false;
+        $scope.showPie();
+      });
+
+
+
+  }
+
+  $scope.showPie = function() {
+    $scope.Para.showSecondContainer = true;
+
+    $('#container').highcharts({
+            credits: {
+              enabled: false
+            },
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: $scope.Para.startTime+ '   ' +'支出占比图'+ '   ' + $scope.Para.endTime 
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: false
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'pay',
+                data: $scope.Para.pay_pie
+            }]
+        });
+    $('#container_2').highcharts({
+            credits: {
+              enabled: false
+            },
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
+            title: {
+                text: $scope.Para.startTime+ '   ' +'收入占比图'+ '   ' + $scope.Para.endTime 
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: false
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'income',
+                data: $scope.Para.income_pie
+            }]
+        });
+  }
+
+  $scope.showLine = function() {
+    $scope.Para.showSecondContainer = false;
+
+    $('#container').highcharts({
+        chart: {
+            type: 'areaspline'
+        },
+        title: {
+            text: $scope.Para.startTime+ '   ' +'支出 & 收入'+ '   ' + $scope.Para.endTime 
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'left',
+            verticalAlign: 'top',
+            x: 150,
+            y: 100,
+            floating: true,
+            borderWidth: 1,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+        },
+        xAxis: {
+            labels: {
+                enabled: false
+            }
+              
+        },
+        yAxis: {
+            title: {
+                text: ''
+            }
+        },
+        tooltip: {
+            shared: true,
+            valueSuffix: ' 元'
+        },
+        credits: {
+            enabled: false
+        },
+        plotOptions: {
+            areaspline: {
+                fillOpacity: 0.5
+            }
+        },
+        series: [{
+            name: '收入',
+            data: $scope.Para.income_line
+        }, {
+            name: '支出',
+            data: $scope.Para.pay_line
+        }]
+    });
   }
 
   $scope.getData = function() {
@@ -879,8 +1051,12 @@ angular.module('starter.controllers', [])
       })
       .error(function() {
         $ionicLoading.hide();
+      })
+      .then(function() {
+        $scope.getChartsData();
       });
   }
+
 
   //在进入的时候加载数据
   $scope.$on('$ionicView.enter', function() {
@@ -902,6 +1078,7 @@ angular.module('starter.controllers', [])
 
       $scope.getTypeData(); 
       $scope.getData();
+
     }
   });
 })

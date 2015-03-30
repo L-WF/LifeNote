@@ -1,4 +1,4 @@
-<ion-view view-title="Count">
+<ion-view view-title="统计">
   <ion-content>
         <div class="list">
           <label class="item item-input item-select">
@@ -55,6 +55,21 @@
         </div>
       </div>
     </div>
+    <div class="button-bar padding-left padding-right padding-bottom" ng-show="!Para.showSpinner">
+      <a class="button icon ion-arrow-graph-up-right button-positive" ng-click="showLine()"></a>
+      <a class="button icon ion-pie-graph button-positive" ng-click="showPie()"></a>
+      <!-- <a class="button icon ion-stats-bars button-positive" ng-click="showColumn()"></a> -->
+    </div>
+    <ion-scroll zooming="true" direction="xy" style="width:90%; margin: 0 auto ;">
+      <div id="container" style=" margin: 0 auto ; text-align:center">
+        <ion-spinner icon="android" ng-show="Para.showSpinner"></ion-spinner>
+      </div>
+    </ion-scroll>
+
+    <ion-scroll zooming="true" direction="xy" style="width:90%; margin: 0 auto ;" ng-show="Para.showSecondContainer">
+      <div id="container_2" style="margin: 0 auto;">
+      </div>
+    </ion-scroll>
 
   </ion-content>
 </ion-view>
