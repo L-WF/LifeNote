@@ -829,23 +829,48 @@ angular.module('starter.controllers', [])
     $scope.Para.pay_pie = [];
     $scope.Para.income_line = [];
     $scope.Para.pay_line = [];
+    $scope.Para.columnChildren = [];
+    $scope.Para.columns = [{"name":"支出","y":$scope.Para.payCount,"drilldown":"支出"},{"name":"收入","y":$scope.Para.incomeCount,"drilldown":"收入"}];
+
+    var payChildren = {"name":"支出","id":"支出"};
+    var incomeChildren = {"name":"收入","id":"收入"};
+    payChildren.data = new Array();
+    incomeChildren.data = new Array();
+
+    var payDrillCount = 0, incomeDrillCount = 0;
     for (var i in $scope.countItems)
     {
       var item = {};
       item.name = $scope.countItems[i].typeName;
       item.y = parseFloat($scope.countItems[i].count);
       if ($scope.countItems[i].isPay == 0)
+      {
         $scope.Para.income_pie.push(item);
+
+        incomeChildren.data[incomeDrillCount] = new Array();
+        incomeChildren.data[incomeDrillCount][0] = item.name;
+        incomeChildren.data[incomeDrillCount][1] = item.y;
+        incomeDrillCount++;
+      }
       else
+      {
         $scope.Para.pay_pie.push(item);
 
-      if ($scope.Para.income_pie == []) 
-        $scope.Para.income_pie = [{"name":"empty","y":100}];
-      if ($scope.Para.pay_pie == []) 
-        $scope.Para.pay_pie = [{"name":"empty","y":100}];
+        payChildren.data[payDrillCount] = new Array();
+        payChildren.data[payDrillCount][0] = item.name;
+        payChildren.data[payDrillCount][1] = item.y;
+        payDrillCount++;
+      }
     }
+    if ($scope.Para.income_pie.length == 0) 
+      $scope.Para.income_pie = [{"name":"empty","y":100}];
+    if ($scope.Para.pay_pie.length == 0) 
+      $scope.Para.pay_pie = [{"name":"empty","y":100}];
 
-    $http.get('http://lwf1993.sinaapp.com/count/countForLine.php?userID='+$rootScope.userID+"&startTime="+$scope.Para.startTime+"&endTime="+$scope.Para.endTime)
+    $scope.Para.columnChildren.push(payChildren);
+    $scope.Para.columnChildren.push(incomeChildren);
+
+    $http.get('http://lwf1993.sinaapp.com/count/countForLine.php?userID='+$rootScope.userID+"&startTime="+$scope.Para.startTime+"&endTime="+$scope.Para.endTime+"&incomeSelected="+$scope.Para.incomeSelected.id+"&paySelected="+$scope.Para.paySelected.id)
       .success(function(data) {
         if (data != "error" && data != "empty")
         {
@@ -869,8 +894,6 @@ angular.module('starter.controllers', [])
         $scope.Para.showSpinner = false;
         $scope.showPie();
       });
-
-
 
   }
 
@@ -994,6 +1017,59 @@ angular.module('starter.controllers', [])
     });
   }
 
+  $scope.showColumn = function() {
+    $scope.Para.showSecondContainer = false;
+
+    $('#container').highcharts({
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: $scope.Para.startTime+ '   ' +'支出 & 收入'+ '   ' + $scope.Para.endTime 
+                },
+                subtitle: {
+                    text: '点击查看具体分类'
+                },
+                xAxis: {
+                    type: 'category'
+                },
+                yAxis: {
+                    title: {
+                        text: ''
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                credits: {
+                    enabled: false
+                },
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.y:.2f}'
+                        }
+                    }
+                },
+
+                tooltip: {
+                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                    pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}</b><br/>'
+                },
+
+                series: [{
+                    name: '支出 & 收入',
+                    colorByPoint: true,
+                    data: $scope.Para.columns
+                }],
+                drilldown: {
+                    series: $scope.Para.columnChildren
+                }
+            });
+  }
+
   $scope.getData = function() {
     $ionicLoading.show({
       template: '<ion-spinner icon="android"></ion-spinner>'
@@ -1010,10 +1086,6 @@ angular.module('starter.controllers', [])
     
     if ($scope.Para.incomeSelected.id == 'None' && $scope.Para.paySelected.id == 'None')
     {
-      $scope.countItems = [];
-      $scope.Para.incomeCount = 0.00;
-      $scope.Para.payCount = 0.00;
-
       $ionicLoading.hide();
       return;
     }
