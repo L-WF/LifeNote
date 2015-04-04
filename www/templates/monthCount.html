@@ -1,0 +1,31 @@
+<ion-view view-title="按月统计">
+  <ion-content>
+
+    <div class="button-bar padding" ng-show="!Para.showSpinner">
+      <a class="button icon ion-arrow-graph-up-right button-positive" ng-click="showLine()"></a>
+      <a class="button icon ion-stats-bars button-positive" ng-click="showColumn()"></a>
+    </div>
+    <ion-scroll zooming="true" direction="xy" style="width:90%; margin: 0 auto ;">
+      <div id="container" style=" margin: 0 auto ; text-align:center">
+        <ion-spinner icon="android" ng-show="Para.showSpinner"></ion-spinner>
+      </div>
+    </ion-scroll>
+
+    <div class="list">
+      <div class="card" ng-repeat="item in countItems">
+        <div class="item item-divider">
+           {{item.date}}
+        </div>
+        <div class="item item-text-wrap item-icon-left" style="background-color:#33cd5f;color:black">
+           <i class="icon ion-ios-plus-empty"></i>
+           收入<div style="float:right">${{item.income}}</div>
+        </div>
+        <div class="item item-text-wrap item-icon-left" style="background-color:#f0b840;color:black">
+           <i class="icon ion-ios-minus-empty"></i>
+          支出<div style="float:right">${{item.pay}}</div>
+        </div>
+      </div>
+    </div>
+
+  </ion-content>
+</ion-view>

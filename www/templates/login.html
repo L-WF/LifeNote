@@ -9,16 +9,16 @@
         <form role="form" name="loginForm" novalidate>
         <div class="list">
           <label class="item item-input item-stacked-label">
-            <span class="input-label">Username</span>
+            <span class="input-label">用户名</span>
             <i class="icon ion-checkmark"  style="float:right; padding-right:10px;" ng-show="loginForm.txtUsername.$valid"></i>  
-            <input type="text" name="txtUsername" placeholder="Letters and numbers only !" maxlength="12" ng-model="loginUser.username" ng-pattern="/^[A-Za-z0-9]+$/" required>
+            <input type="text" name="txtUsername" placeholder="仅支持字母与数字！" maxlength="12" ng-model="loginUser.username" ng-pattern="/^[A-Za-z0-9]+$/" required>
             <!-- <span class="glyphicon glyphicon-ok form-control-feedback"
                             ng-show="loginForm.txtUsername.$valid"></span>  -->
           </label>
           <label class="item item-input item-stacked-label">
-            <span class="input-label">Password</span>
+            <span class="input-label">密码</span>
             <i class="icon ion-checkmark"  style="float:right; padding-right:10px;" ng-show="loginForm.txtPassword.$valid"></i> 
-            <input type="password" name="txtPassword" placeholder="Letters and numbers only !" maxlength="12" ng-model="loginUser.password" ng-pattern="/^[A-Za-z0-9]+$/" required>
+            <input type="password" name="txtPassword" placeholder="仅支持字母与数字！" maxlength="12" ng-model="loginUser.password" ng-pattern="/^[A-Za-z0-9]+$/" required>
              <!-- <span class="glyphicon glyphicon-ok form-control-feedback"
                               ng-show="loginForm.txtPassword.$valid"></span>     --> 
           </label>

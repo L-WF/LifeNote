@@ -27,10 +27,10 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   function showConfirm() {
     var confirmPopup = $ionicPopup.confirm({
-        title: '<strong>EXIT</strong>',
-        template: 'Are you sure to exit?',
-        okText: 'yes',
-        cancelText: 'no'
+        title: '<strong>退出</strong>',
+        template: '确定要退出程序吗？',
+        okText: '是',
+        cancelText: '否'
       });
 
       confirmPopup.then(function (res) {
@@ -114,6 +114,33 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       'menuContent': {
         templateUrl: "templates/count.html",
         controller: 'countCtrl'
+      }
+    }
+  })
+  .state('app.monthCount', {
+    url: "/monthCount",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/monthCount.html",
+        controller: 'monthCountCtrl'
+      }
+    }
+  })
+  .state('app.news', {
+    url: "/news",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/news.html",
+        controller: 'newsCtrl'
+      }
+    }
+  })
+  .state('app.weather', {
+    url: "/weather",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/weather.html",
+        controller: 'weatherCtrl'
       }
     }
   })

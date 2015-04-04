@@ -15,6 +15,7 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    "http://github.com/VitaliiBlagodir/cordova-plugin-datepicker"
+    "http://github.com/VitaliiBlagodir/cordova-plugin-datepicker",
+    "org.apache.cordova.inappbrowser"
   ]
 }

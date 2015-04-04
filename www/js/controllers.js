@@ -1,6 +1,5 @@
 angular.module('starter.controllers', [])
 
-
 .controller('tabsCtrl', function($scope, $ionicTabsDelegate) {
 })
 
@@ -9,6 +8,12 @@ angular.module('starter.controllers', [])
   $scope.Para = {};
   $scope.Para.budgetData = false;
   $scope.Para.recordData = false;
+  $scope.Para.showWeather = false;
+  $scope.Para.cityAndTemp = '';
+  $scope.Para.dayUrl = '';
+  $scope.Para.nightUrl = '';
+
+
   $scope.selectIndex = function(index) {
     if ( index == $ionicSlideBoxDelegate.slidesCount()-1 )
     {
@@ -114,8 +119,39 @@ angular.module('starter.controllers', [])
       });
   }
 
+  $scope.getWeatherData = function() {
+    $http.get('http://api.map.baidu.com/telematics/v3/weather?location='+$rootScope.city+'&output=json&ak=9ffc8LPKQ8PcfjDPAcu3D8WL&t='+(new Date()).getTime())
+    .success(function(data){
+      if (data.status == "success")
+      {
+        $scope.Para.city = $rootScope.city;
+        $scope.Para.dayUrl = data.results[0].weather_data[0].dayPictureUrl;
+        $scope.Para.nightUrl = data.results[0].weather_data[0].nightPictureUrl;
+        $scope.Para.temp = data.results[0].weather_data[0].date.substr(10);
+        if (Boolean($scope.Para.temp) == false)
+          $scope.Para.temp = data.results[0].weather_data[0].temperature;
+        $scope.Para.showWeather = true;
+      }
+    });
+  }
+
   //在进入的时候加载数据
   $scope.$on('$ionicView.enter', function() {
+    if ($rootScope.city == '')
+    {
+      $http.get('http://api.map.baidu.com/location/ip?ak=9ffc8LPKQ8PcfjDPAcu3D8WL&t='+(new Date()).getTime())
+      .success(function(data){
+        if (data.status == 0)
+        {
+          $rootScope.city = data.content.address_detail.city;
+          $scope.getWeatherData();
+        }
+      });
+    }
+    else
+    {
+      $scope.getWeatherData();
+    }
 
     if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
     {
@@ -147,12 +183,12 @@ angular.module('starter.controllers', [])
         if (data == "error")
         {
           $ionicLoading.hide();
-          $scope.showAlert("error","Request fail !");
+          $scope.showAlert("错误","请求失败！");
         }
         else if (data == "empty")
         {
           $ionicLoading.hide();
-          $scope.showAlert("warning","Empty data !");
+          $scope.showAlert("提醒","暂无数据！");
         }
         else
         {
@@ -162,7 +198,7 @@ angular.module('starter.controllers', [])
       })
       .error(function() {
         $ionicLoading.hide();
-        $scope.showAlert("error","Request fail !");
+        $scope.showAlert("错误","请求失败！");
       });
   }
 
@@ -175,7 +211,7 @@ angular.module('starter.controllers', [])
         if (data == "error")
         {
           $ionicLoading.hide();
-          $scope.showAlert("error","Request fail !");
+          $scope.showAlert("错误","请求失败！");
         }
         else
         {
@@ -184,7 +220,7 @@ angular.module('starter.controllers', [])
       })
       .error(function() {
         $ionicLoading.hide();
-        $scope.showAlert("error","Request fail !");
+        $scope.showAlert("错误","请求失败！");
       });
   }
 
@@ -217,7 +253,7 @@ angular.module('starter.controllers', [])
 
   $scope.deleteType = function(id, name) {
     var confirmPopup = $ionicPopup.confirm({
-        title: '<strong>warning</strong>',
+        title: '<strong>警告</strong>',
         template: '确定要删除 '+name+ ' 吗？',
         okText: '是',
         cancelText: '否'
@@ -304,6 +340,7 @@ angular.module('starter.controllers', [])
       {
         $rootScope.userID = data[0].id;
         $rootScope.username = data[0].username;
+        $rootScope.city = '';
         $state.go('app.homePage');
       }
     })
@@ -374,6 +411,7 @@ angular.module('starter.controllers', [])
       {
         $rootScope.userID = data[0].id;
         $rootScope.username = data[0].username;
+        $rootScope.city = '';
         $state.go('app.homePage');
       }
       else
@@ -400,10 +438,10 @@ angular.module('starter.controllers', [])
   
   $scope.logout = function() {
     var confirmPopup = $ionicPopup.confirm({
-        title: '<strong>EXIT</strong>',
-        template: 'Are you sure to logout?',
-        okText: 'yes',
-        cancelText: 'no'
+        title: '<strong>注销</strong>',
+        template: '确定要退出登录吗？',
+        okText: '是',
+        cancelText: '否'
       });
 
       confirmPopup.then(function (res) {
@@ -418,10 +456,10 @@ angular.module('starter.controllers', [])
 
   $scope.exit = function() {
     var confirmPopup = $ionicPopup.confirm({
-        title: '<strong>EXIT</strong>',
-        template: 'Are you sure to exit?',
-        okText: 'yes',
-        cancelText: 'no'
+        title: '<strong>退出</strong>',
+        template: '确定要退出程序吗？',
+        okText: '是',
+        cancelText: '否'
       });
 
       confirmPopup.then(function (res) {
@@ -455,12 +493,12 @@ angular.module('starter.controllers', [])
         if (data == "error")
         {
           $ionicLoading.hide();
-          $scope.showAlert("error","Request fail !");
+          $scope.showAlert("错误","请求失败！");
         }
         else if (data == "empty")
         {
           $ionicLoading.hide();
-          $scope.showAlert("warning","Empty data !");
+          $scope.showAlert("提醒","暂无数据！");
         }
         else
         {
@@ -477,7 +515,7 @@ angular.module('starter.controllers', [])
       })
       .error(function() {
         $ionicLoading.hide();
-        $scope.showAlert("error","Request fail !");
+        $scope.showAlert("错误","请求失败！");
       });
   }
 
@@ -490,20 +528,20 @@ angular.module('starter.controllers', [])
         if (data == "error")
         {
           $ionicLoading.hide();
-          $scope.showAlert("error","Request fail !");
+          $scope.showAlert("错误","请求失败！");
         }
         else
         {
           $scope.Para.amount = "";
           $scope.Para.selectedID = "";
           $ionicLoading.hide();
-          $scope.showAlert("success","操作成功 !");
+          $scope.showAlert("完成","操作成功 !");
           
         }
       })
       .error(function() {
         $ionicLoading.hide();
-        $scope.showAlert("error","Request fail !");
+        $scope.showAlert("错误","请求失败！");
       });
   }
 
@@ -561,7 +599,7 @@ angular.module('starter.controllers', [])
 
   $scope.deleteRecord = function(id) {
     var confirmPopup = $ionicPopup.confirm({
-        title: '<strong>warning</strong>',
+        title: '<strong>警告</strong>',
         template: '确定要删除这一记录吗？',
         okText: '是',
         cancelText: '否'
@@ -892,14 +930,12 @@ angular.module('starter.controllers', [])
           $scope.Para.pay_line = [0];
 
         $scope.Para.showSpinner = false;
-        $scope.showPie();
+        $scope.showPie(false);
       });
 
   }
 
-  $scope.showPie = function() {
-    $scope.Para.showSecondContainer = true;
-
+  $scope.showPie = function(secondPieLoaded) {
     $('#container').highcharts({
             credits: {
               enabled: false
@@ -931,6 +967,11 @@ angular.module('starter.controllers', [])
                 data: $scope.Para.pay_pie
             }]
         });
+
+    $scope.Para.showSecondContainer = true;
+    if (secondPieLoaded == true) 
+      return;
+    
     $('#container_2').highcharts({
             credits: {
               enabled: false
@@ -1028,7 +1069,7 @@ angular.module('starter.controllers', [])
                     text: $scope.Para.startTime+ '   ' +'支出 & 收入'+ '   ' + $scope.Para.endTime 
                 },
                 subtitle: {
-                    text: '点击查看具体分类'
+                    text: ''
                 },
                 xAxis: {
                     type: 'category'
@@ -1155,5 +1196,313 @@ angular.module('starter.controllers', [])
   });
 })
 
+.controller('monthCountCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout) {
+  $scope.Para = {};
+  $scope.Para.showSpinner = true;
 
+  $scope.getData = function() {
+    var url = 'http://lwf1993.sinaapp.com/count/monthCount.php?userID='+$rootScope.userID;
+
+    $http.get(url)
+      .success(function(data) {
+        if (data == "error")
+        {
+        }
+        else if (data == "empty")
+        {
+          $scope.countItems = [];
+        }
+        else
+        {
+          $scope.incomeData = [];
+          $scope.payData = [];
+          $scope.chartX = [];
+
+          for (var i in data)
+          {
+            $scope.incomeData.push(parseFloat(data[i].income));
+            $scope.payData.push(parseFloat(data[i].pay));
+            $scope.chartX.push(data[i].date);
+          }
+
+          $scope.countItems = data.reverse();
+        }
+      })
+      .then(function() {
+        $scope.showColumn();
+      });
+  }
+
+  $scope.showColumn = function() {
+    $('#container').highcharts({
+        credits: {
+          enabled: false
+        },
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '按月统计收支柱状图'
+        },
+        xAxis: {
+            categories: $scope.chartX
+        },
+        yAxis: {
+            allowDecimals: false,
+            min: 0,
+            title: {
+                text: ''
+            }
+        },
+        tooltip: {
+            formatter: function () {
+                return '<b>' + this.x + '</b><br/>' +
+                    this.series.name + ': ' + this.y + '<br/>'
+            }
+        },
+
+        plotOptions: {
+            column: {
+                stacking: 'normal'
+            }
+        },
+
+        series: [{
+            name: '收入',
+            data: $scope.incomeData,
+            stack: '收入'
+        },  {
+            name: '支出',
+            data: $scope.payData,
+            stack: '支出'
+        }]
+    });
+    $scope.Para.showSpinner = false;
+  }
+
+  $scope.showLine = function() {
+    $('#container').highcharts({
+      credits: {
+        enabled: false
+      },
+      chart: {
+          type: 'area'
+      },
+      title: {
+          text: '按月统计收支曲线图'
+      },
+      subtitle: {
+          text: ''
+      },
+      xAxis: {
+          categories: $scope.chartX,
+          tickmarkPlacement: 'on',
+          title: {
+              enabled: true
+          }
+      },
+      yAxis: {
+          title: {
+              text: ''
+          }
+      },
+      tooltip: {
+          shared: true,
+          valueSuffix: ''
+      },
+      plotOptions: {
+          area: {
+              stacking: 'normal',
+              lineColor: '#666666',
+              lineWidth: 1,
+              marker: {
+                  lineWidth: 1,
+                  lineColor: '#666666'
+              }
+          }
+      },
+      series: [{
+          name: '收入',
+          data: $scope.incomeData
+      }, {
+          name: '支出',
+          data: $scope.payData
+      }]
+    });
+  }
+
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
+
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      $scope.getData();
+    }
+  });
+})
+
+.controller('newsCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicModal) {
+  var regex_title = /blank">([\s\S]*?)<\/a>/gi;
+  var regex_href = /href="([\s\S]*?)" target/gi;
+  var regex_home = /<span>([\s\S]*?)<\/span>/gi;
+
+  var sportURL = 'http://news.baidu.com/n?cmd=1&class=sportnews&pn=1&tn=newsbrofcu';
+  var interURL = 'http://news.baidu.com/n?cmd=1&class=internews&pn=1&tn=newsbrofcu';
+  var sociaURL = 'http://news.baidu.com/n?cmd=1&class=socianews&pn=1&tn=newsbrofcu';
+
+  $scope.interNews = [];
+  $scope.sociaNews = [];
+  $scope.sportNews = [];
+  $scope.currentNews = [];
+
+  $scope.icon = '';
+
+  $scope.getNewsData = function(type) {
+    if (type == 'interNews') var url = interURL;
+    else if (type == 'sociaNews') var url = sociaURL;
+    else if (type == 'sportNews') var url = sportURL;
+
+    $http.get(url)
+      .success(function(data)
+      {
+        var titles = data.match(regex_title);
+        var hrefs = data.match(regex_href);
+        var homes = data.match(regex_home);
+        for (var i=0 ; i<homes.length ; i++)
+        {
+          var item = {};
+          item.home = unescape((homes[i]+'').replace('<span>','').replace('</span>','').replace('&nbsp','  ').replace(/&#x/g,'%u').replace(/;/g,''));
+          item.title = unescape((titles[i]+'').replace('blank">','').replace('</a>','').replace(/&#x/g,'%u').replace(/;/g,''));
+          item.href = unescape((hrefs[i+2]+'').replace('href="','').replace('" target','').replace(/&#x/g,'%u').replace(/;/g,''));
+
+          if (type == 'interNews') $scope.interNews.push(item);
+          else if (type == 'sociaNews') $scope.sociaNews.push(item);
+          else if (type == 'sportNews') $scope.sportNews.push(item);
+        }
+
+        if (type == 'interNews') 
+        {
+          $scope.currentNews = $scope.interNews;
+          $scope.icon = 'ion-planet';
+          $ionicLoading.hide();
+        }
+      });
+  }
+
+  $scope.changeNews = function(type) {
+    if (type == 'interNews') 
+    {
+      $scope.currentNews = $scope.interNews;
+      $scope.icon = 'ion-planet';
+    }
+    else if (type == 'sociaNews')
+    {
+      $scope.currentNews = $scope.sociaNews;
+      $scope.icon = 'ion-ios-people';
+    }
+    else if (type == 'sportNews') 
+    {
+      $scope.currentNews = $scope.sportNews;
+      $scope.icon = 'ion-ios-football';
+    }
+  }
+
+  $scope.openUrl = function(url) {
+    var ref = window.open(url, '_blank', 'location=yes');
+    /*ref.addEventListener('loadstart', function(event) {
+      $ionicLoading.show({
+        template: '<ion-spinner icon="android"></ion-spinner>'
+      });
+    });  
+    ref.addEventListener('loadstop', function(event) {
+      $ionicLoading.hide();
+      ref.show();
+    });  */
+  };
+
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
+
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      $ionicLoading.show({
+        template: '<ion-spinner icon="android"></ion-spinner>'
+      });
+
+      $scope.getNewsData('interNews');
+      $scope.getNewsData('sociaNews');
+      $scope.getNewsData('sportNews');
+    }
+  });
+})
+
+.controller('weatherCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicModal) {
+  $scope.dataLoaded = false;
+
+  $scope.getWeatherData = function() {
+    $http.get('http://api.map.baidu.com/telematics/v3/weather?location='+$rootScope.city+'&output=json&ak=9ffc8LPKQ8PcfjDPAcu3D8WL&t='+(new Date()).getTime())
+    .success(function(data){
+      if (data.status == "success")
+      {
+        $scope.city = data.results[0].currentCity;
+        $scope.pm = data.results[0].pm25;
+        $scope.index = data.results[0].index;
+        $scope.today = data.results[0].weather_data[0];
+        $scope.weather_data = data.results[0].weather_data;
+        $scope.weather_data.shift();
+        $scope.dataLoaded = true;
+        $ionicLoading.hide();
+      }
+      else
+      {
+        $ionicLoading.hide();
+        $state.go('app.homePage');
+      }
+    });
+  }
+
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      $ionicLoading.show({
+        template: '<ion-spinner icon="android"></ion-spinner>'
+      });
+
+      if ($rootScope.city == '')
+      {
+        $http.get('http://api.map.baidu.com/location/ip?ak=9ffc8LPKQ8PcfjDPAcu3D8WL&t='+(new Date()).getTime())
+        .success(function(data){
+          if (data.status == 0)
+          {
+            $rootScope.city = data.content.address_detail.city;
+            $scope.getWeatherData();
+          }
+        });
+      }
+      else
+      {
+        $scope.getWeatherData();
+      }
+
+      if (Boolean($scope.city) == false)
+      {
+        $ionicLoading.hide();
+        $state.go('app.homePage');
+      }
+    }
+  });
+})
 ;
