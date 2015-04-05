@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('tabsCtrl', function($scope, $ionicTabsDelegate) {
+.controller('tabsCtrl', function($scope) {
 })
 
 .controller('homeCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout, $ionicSlideBoxDelegate) {
@@ -13,6 +13,9 @@ angular.module('starter.controllers', [])
   $scope.Para.dayUrl = '';
   $scope.Para.nightUrl = '';
 
+  $scope.go = function(url) {
+    $state.go(url);
+  }
 
   $scope.selectIndex = function(index) {
     if ( index == $ionicSlideBoxDelegate.slidesCount()-1 )
@@ -1345,7 +1348,7 @@ angular.module('starter.controllers', [])
   });
 })
 
-.controller('newsCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicModal) {
+.controller('newsCtrl', function($scope, $state, $ionicLoading, $rootScope, $http) {
   var regex_title = /blank">([\s\S]*?)<\/a>/gi;
   var regex_href = /href="([\s\S]*?)" target/gi;
   var regex_home = /<span>([\s\S]*?)<\/span>/gi;
@@ -1444,7 +1447,7 @@ angular.module('starter.controllers', [])
   });
 })
 
-.controller('weatherCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicModal) {
+.controller('weatherCtrl', function($scope, $state, $ionicLoading, $rootScope, $http) {
   $scope.dataLoaded = false;
 
   $scope.getWeatherData = function() {
@@ -1456,8 +1459,14 @@ angular.module('starter.controllers', [])
         $scope.pm = data.results[0].pm25;
         $scope.index = data.results[0].index;
         $scope.today = data.results[0].weather_data[0];
+        $scope.today.temp = data.results[0].weather_data[0].date.substr(10);
+        if (Boolean($scope.today.temp) == false)
+          $scope.today.temp = data.results[0].weather_data[0].temperature;
+
         $scope.weather_data = data.results[0].weather_data;
         $scope.weather_data.shift();
+
+
         $scope.dataLoaded = true;
         $ionicLoading.hide();
       }
