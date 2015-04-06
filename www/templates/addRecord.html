@@ -8,7 +8,7 @@
       <div class="list">
         <label class="item item-input">
           <span class="input-label">数额</span>
-          <input type="number" placeholder="支持两位小数！" maxlength="12" ng-model="Para.amount" ng-pattern="/^\d+(\.\d{2})?$/" required>
+          <input type="tel" placeholder="支持两位小数！" maxlength="12" ng-model="Para.amount" ng-pattern="/^\d+(\.\d{1,2})?$/" required>
         </label>
       </div>
     </form>

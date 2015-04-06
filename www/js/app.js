@@ -35,7 +35,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
       confirmPopup.then(function (res) {
         if (res) {
-            ionic.Platform.exitApp();
+          window.close();
+          ionic.Platform.exitApp();
         } 
       });
   };

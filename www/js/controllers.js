@@ -271,9 +271,9 @@ angular.module('starter.controllers', [])
   $scope.editBudget = function(id, amount, name) {
     $scope.currentBudget = {};
     $scope.currentBudget.amount = amount;
-    var budgetRegex = /^\d+(\.\d{2})?$/;
+    var budgetRegex = /^\d+(\.\d{1,2})?$/;
     var myPopup = $ionicPopup.show({
-      template: '<input type="number"  maxlength="12" ng-model="currentBudget.amount" >',
+      template: '<input type="tel"  maxlength="12" ng-model="currentBudget.amount" >',
       title: '本月预算:'+name,
       subTitle: '支持小数点后两位的精度',
       scope: $scope,
@@ -467,7 +467,8 @@ angular.module('starter.controllers', [])
 
       confirmPopup.then(function (res) {
         if (res) {
-            ionic.Platform.exitApp();
+          window.close();
+          ionic.Platform.exitApp();
         } 
       });
   }
@@ -1201,7 +1202,6 @@ angular.module('starter.controllers', [])
 
 .controller('monthCountCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout) {
   $scope.Para = {};
-  $scope.Para.showSpinner = true;
 
   $scope.getData = function() {
     var url = 'http://lwf1993.sinaapp.com/count/monthCount.php?userID='+$rootScope.userID;
@@ -1233,6 +1233,7 @@ angular.module('starter.controllers', [])
       })
       .then(function() {
         $scope.showColumn();
+        $ionicLoading.hide();
       });
   }
 
@@ -1280,7 +1281,6 @@ angular.module('starter.controllers', [])
             stack: '支出'
         }]
     });
-    $scope.Para.showSpinner = false;
   }
 
   $scope.showLine = function() {
@@ -1343,6 +1343,9 @@ angular.module('starter.controllers', [])
     }
     else
     {
+      $ionicLoading.show({
+        template: '<ion-spinner icon="android"></ion-spinner>'
+      });
       $scope.getData();
     }
   });
