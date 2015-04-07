@@ -171,7 +171,7 @@ angular.module('starter.controllers', [])
   });
 })
 
-.controller('BudgetCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup) {
+.controller('budgetCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $ionicActionSheet) {
 
   $scope.showAlert = function(title,text) {
      var alertPopup = $ionicPopup.alert({
@@ -294,6 +294,27 @@ angular.module('starter.controllers', [])
         }
       ]
     });
+  }
+
+  $scope.showActionSheet = function(item) {
+  	$ionicActionSheet.show({
+	     buttons: [
+	       { text: '<i class="icon ion-edit"></i>本月预算' }
+	     ],
+	     destructiveText: '<i class="icon ion-trash-a"></i>删除',
+	     titleText: item.typeName,
+	     cancelText: '<i class="icon ion-reply"></i>取消',
+	     cancel: function() {
+	        },
+	     buttonClicked: function(index) {
+	       $scope.editBudget(item.id, item.budget, item.typeName);
+	       return true;
+	     },
+	     destructiveButtonClicked: function(){
+	     	$scope.deleteType(item.id, item.typeName);
+	     	return true;
+	     }
+	   });
   }
 
   //在进入的时候加载数据
@@ -478,6 +499,8 @@ angular.module('starter.controllers', [])
   $scope.Para = {};
   $scope.Para.incomeClass = "";
   $scope.Para.payClass = "button-outline";
+  $scope.Para.incomeTypeClass = "";
+  $scope.Para.payTypeClass = "display:none";
   $scope.Para.isPay = 0;
   $scope.Para.amount = "";
   $scope.Para.selectedID = "";
@@ -513,7 +536,6 @@ angular.module('starter.controllers', [])
             else
               $scope.payTypes.push(data[i]);
           }
-          $scope.items = $scope.incomeTypes;
           $ionicLoading.hide();
         }
       })
@@ -569,17 +591,12 @@ angular.module('starter.controllers', [])
   $scope.changeType = function(isPay) {
     if ($scope.Para.isPay == isPay)
       return;
-    $ionicLoading.show({
-      template: '<ion-spinner icon="android"></ion-spinner>'
-    });
     $scope.Para.selectedID = "";
     $scope.Para.isPay = isPay;
     $scope.Para.incomeClass = isPay == 0 ? "" : "button-outline";
     $scope.Para.payClass = isPay == 1 ? "" : "button-outline";
-    $scope.items = isPay == 0 ? $scope.incomeTypes : $scope.payTypes;
-    $timeout(function() {
-      $ionicLoading.hide();
-    }, 0);
+  	$scope.Para.incomeTypeClass = isPay == 0 ? "" : "display:none";
+  	$scope.Para.payTypeClass = isPay == 1 ? "" : "display:none";
   }
 
   $scope.submit = function() {
@@ -808,7 +825,7 @@ angular.module('starter.controllers', [])
   $scope.Para.incomeCount = 0.00;
   $scope.Para.payCount = 0.00;
 
-  $scope.Para.showSecondContainer = true;
+  $scope.Para.secondContainer = '';
 
 
   $scope.selectDate = function($event,isEnd) {
@@ -972,7 +989,7 @@ angular.module('starter.controllers', [])
             }]
         });
 
-    $scope.Para.showSecondContainer = true;
+    $scope.Para.secondContainer = '';
     if (secondPieLoaded == true) 
       return;
     
@@ -1010,7 +1027,7 @@ angular.module('starter.controllers', [])
   }
 
   $scope.showLine = function() {
-    $scope.Para.showSecondContainer = false;
+    $scope.Para.secondContainer = 'display:none';
 
     $('#container').highcharts({
         chart: {
@@ -1063,7 +1080,7 @@ angular.module('starter.controllers', [])
   }
 
   $scope.showColumn = function() {
-    $scope.Para.showSecondContainer = false;
+    $scope.Para.secondContainer = 'display:none';
 
     $('#container').highcharts({
                 chart: {
@@ -1452,6 +1469,34 @@ angular.module('starter.controllers', [])
 
 .controller('weatherCtrl', function($scope, $state, $ionicLoading, $rootScope, $http) {
   $scope.dataLoaded = false;
+  $scope.refreshing = false;
+
+	$scope.doRefresh = function() {
+		if ($scope.refreshing == false)
+		{
+			$scope.refreshing = true;
+			$http.get('http://api.map.baidu.com/telematics/v3/weather?location='+$rootScope.city+'&output=json&ak=9ffc8LPKQ8PcfjDPAcu3D8WL&t='+(new Date()).getTime())
+	    .success(function(data){
+	      if (data.status == "success")
+	      {
+	        $scope.city = data.results[0].currentCity;
+	        $scope.pm = data.results[0].pm25;
+	        $scope.index = data.results[0].index;
+	        $scope.today = data.results[0].weather_data[0];
+	        $scope.today.temp = data.results[0].weather_data[0].date.substr(10);
+	        if (Boolean($scope.today.temp) == false)
+	          $scope.today.temp = data.results[0].weather_data[0].temperature;
+
+	        $scope.weather_data = data.results[0].weather_data;
+	        $scope.weather_data.shift();
+	      }
+	    })
+	    .finally(function() {
+	      $scope.$broadcast('scroll.refreshComplete');
+	      $scope.refreshing = false;
+	    });
+		}
+  };
 
   $scope.getWeatherData = function() {
     $http.get('http://api.map.baidu.com/telematics/v3/weather?location='+$rootScope.city+'&output=json&ak=9ffc8LPKQ8PcfjDPAcu3D8WL&t='+(new Date()).getTime())

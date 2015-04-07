@@ -1,33 +1,38 @@
 <ion-view view-title="{{city}}">
   <ion-content ng-show="dataLoaded">
-	<div class="card" style="margin-bottom:0px" ng-model="today">
-	  <div class="item item-divider">
-	    {{today.date.substr(0,2) + '：'}}{{today.temp}}
-	  </div>
-	  	<div class="item" style="height:50px">
-	  		<div style="float:left;"><font size="4">{{today.weather}}&nbsp;&nbsp;{{today.wind}}</font>
-	  		</div>
-	  		<img src="{{today.nightPictureUrl}}" height="30px" width="42px" style="float:right;margin-top:-5px">
-	  		<img src="{{today.dayPictureUrl}}" height="30px" width="42px" style="float:right;margin-right:10px;margin-top:-5px">
-	  	</div>
-	  	<div class="item item-text-wrap" ng-repeat="item in index">
-		    <font size="4">{{item.title}}</font>：{{item.des}}
+	  <ion-refresher
+	    pulling-text="Pull to refresh..."
+	    on-refresh="doRefresh()"
+	    spinner="android" style="margin-top:-8px" >
+	  </ion-refresher>
+		<div class="card" style="margin-bottom:0px" ng-model="today">
+		  <div class="item item-divider">
+		    {{today.date.substr(0,2) + '：'}}{{today.temp}}
+		  </div>
+		  	<div class="item" style="height:50px">
+		  		<div style="float:left;"><font size="4">{{today.weather}}&nbsp;&nbsp;{{today.wind}}</font>
+		  		</div>
+		  		<img src="{{today.nightPictureUrl}}" height="30px" width="42px" style="float:right;margin-top:-5px">
+		  		<img src="{{today.dayPictureUrl}}" height="30px" width="42px" style="float:right;margin-right:10px;margin-top:-5px">
+		  	</div>
+		  	<div class="item item-text-wrap" ng-repeat="item in index">
+			    <font size="4">{{item.title}}</font>：{{item.des}}
+			</div>
 		</div>
-	</div>
 
 
-	<div class="list">
-	<div class="card"  ng-repeat="item in weather_data">
-		<div class="item item-divider">
-		   {{item.date}}：{{item.temperature}}
+		<div class="list">
+		<div class="card"  ng-repeat="item in weather_data">
+			<div class="item item-divider">
+			   {{item.date}}：{{item.temperature}}
+			</div>
+		  	<div class="item" style="height:50px">
+		  		<div style="float:left;"><font size="4">{{item.weather}}&nbsp;&nbsp;{{item.wind}}</font>
+		  		</div>
+		  		<img src="{{item.nightPictureUrl}}" height="30px" width="42px" style="float:right;margin-top:-5px">
+		  		<img src="{{item.dayPictureUrl}}" height="30px" width="42px" style="float:right;margin-right:10px;margin-top:-5px">
+		  	</div>
 		</div>
-	  	<div class="item" style="height:50px">
-	  		<div style="float:left;"><font size="4">{{item.weather}}&nbsp;&nbsp;{{item.wind}}</font>
-	  		</div>
-	  		<img src="{{item.nightPictureUrl}}" height="30px" width="42px" style="float:right;margin-top:-5px">
-	  		<img src="{{item.dayPictureUrl}}" height="30px" width="42px" style="float:right;margin-right:10px;margin-top:-5px">
-	  	</div>
-	</div>
-	</div>
+		</div>
   </ion-content>
 </ion-view>

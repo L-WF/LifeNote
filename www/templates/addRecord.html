@@ -12,16 +12,23 @@
         </label>
       </div>
     </form>
-    <div class="padding-top">
+    <div >
       <div class="list">
         <div class="item item-divider">
           请选择类型
         </div>
 
-        <ion-radio ng-repeat="item in items"
-                   ng-show = "item.isPay == {{Para.isPay}}"
+        <ion-radio ng-repeat="item in incomeTypes"
                    ng-value = "item.id"
                    ng-model="Para.selectedID"
+                   style="{{Para.incomeTypeClass}}"
+                   >
+          {{ item.typeName }}
+        </ion-radio>
+        <ion-radio ng-repeat="item in payTypes"
+                   ng-value = "item.id"
+                   ng-model="Para.selectedID"
+                   style="{{Para.payTypeClass}}"
                    >
           {{ item.typeName }}
         </ion-radio>

@@ -77,7 +77,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     views: {
       'menuContent': {
         templateUrl: "templates/budget.html",
-          controller: 'BudgetCtrl'
+          controller: 'budgetCtrl'
       }
     }
   })
