@@ -56,20 +56,18 @@
       </div>
     </div>
     <div class="button-bar padding-left padding-right padding-bottom" ng-show="!Para.showSpinner">
-      <a class="button icon ion-arrow-graph-up-right button-positive" ng-click="showLine()"></a>
-      <a class="button icon ion-pie-graph button-positive" ng-click="showPie(true)"></a>
-      <a class="button icon ion-stats-bars button-positive" ng-click="showColumn()"></a>
+      <a class="button icon ion-arrow-graph-up-right positive" ng-class="{'button-positive': currentChart=='Line'}" ng-click="showLine()"></a>
+      <a class="button icon ion-pie-graph positive" ng-class="{'button-positive': currentChart=='Pie'}" ng-click="showPie()"></a>
+      <a class="button icon ion-stats-bars positive" ng-class="{'button-positive': currentChart=='Column'}" ng-click="showColumn()"></a>
     </div>
-    <ion-scroll zooming="true" direction="xy" style="width:90%; margin: 0 auto ;">
-      <div id="container" style=" margin: 0 auto ; text-align:center">
+    <div style="text-align:center;margin: -10px 10px ;">
+      <div id="container" class="chart" >
         <ion-spinner icon="android" ng-show="Para.showSpinner"></ion-spinner>
       </div>
-    </ion-scroll>
 
-    <ion-scroll zooming="true" direction="xy" style="width:90%; margin: 0 auto ;{{Para.secondContainer}}">
-      <div id="container_2" style="margin: 0 auto; text-align:center">
+      <div id="container_2" ng-class="{'hideSecondPie': currentChart!='Pie'}" class="chart_2">
       </div>
-    </ion-scroll>
+    </div>
 
   </ion-content>
 </ion-view>

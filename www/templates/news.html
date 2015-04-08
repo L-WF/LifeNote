@@ -16,15 +16,15 @@
   </ion-content>
 
   <div class="tabs tabs-positive tabs-icon-top">
-  <a class="tab-item" ng-click="changeNews('interNews')">
+  <a class="tab-item" ng-class="{'tab-item-active': icon=='ion-planet'}" ng-click="changeNews('interNews')">
     <i class="icon ion-planet"></i>
     国际
   </a>
-  <a class="tab-item" ng-click="changeNews('sportNews')">
+  <a class="tab-item" ng-class="{'tab-item-active': icon=='ion-ios-football'}" ng-click="changeNews('sportNews')">
     <i class="icon ion-ios-football"></i>
     体育
   </a>
-  <a class="tab-item" ng-click="changeNews('sociaNews')">
+  <a class="tab-item" ng-class="{'tab-item-active': icon=='ion-ios-people'}" ng-click="changeNews('sociaNews')">
     <i class="icon ion-ios-people"></i>
     社会
   </a>

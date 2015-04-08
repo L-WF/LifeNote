@@ -1,4 +1,37 @@
-/* Empty. Add your own CSS if you like */
+.hideRadio
+{
+  display: none;
+}
+.hideSecondPie
+{
+  overflow: hidden;
+  height:0;
+}
+.chart
+{
+  width: 100%;
+  margin: 0, auto ;
+  padding-top:10px;
+  border-color: #b2b2b2;
+  border-top-width:0px;
+  border-left-width:1px;
+  border-right-width:1px;
+  border-bottom-width:1px;
+  border-style: solid;
+  text-align:center;
+}
+.chart_2
+{
+  width: 100%;
+  margin: 0, auto ;
+  border-color: #b2b2b2;
+  border-top-width:0px;
+  border-left-width:1px;
+  border-right-width:1px;
+  border-bottom-width:1px;
+  border-style: solid;
+  text-align:center;
+}
 
 progress
 {

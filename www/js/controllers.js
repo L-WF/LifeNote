@@ -497,10 +497,6 @@ angular.module('starter.controllers', [])
 
 .controller('addRecordCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout) {
   $scope.Para = {};
-  $scope.Para.incomeClass = "";
-  $scope.Para.payClass = "button-outline";
-  $scope.Para.incomeTypeClass = "";
-  $scope.Para.payTypeClass = "display:none";
   $scope.Para.isPay = 0;
   $scope.Para.amount = "";
   $scope.Para.selectedID = "";
@@ -593,10 +589,6 @@ angular.module('starter.controllers', [])
       return;
     $scope.Para.selectedID = "";
     $scope.Para.isPay = isPay;
-    $scope.Para.incomeClass = isPay == 0 ? "" : "button-outline";
-    $scope.Para.payClass = isPay == 1 ? "" : "button-outline";
-  	$scope.Para.incomeTypeClass = isPay == 0 ? "" : "display:none";
-  	$scope.Para.payTypeClass = isPay == 1 ? "" : "display:none";
   }
 
   $scope.submit = function() {
@@ -827,6 +819,7 @@ angular.module('starter.controllers', [])
 
   $scope.Para.secondContainer = '';
 
+  $scope.currentChart = '';
 
   $scope.selectDate = function($event,isEnd) {
     var options = {
@@ -956,7 +949,9 @@ angular.module('starter.controllers', [])
 
   }
 
-  $scope.showPie = function(secondPieLoaded) {
+  $scope.showPie = function() {
+    if ($scope.currentChart == 'Pie') return;
+    $scope.currentChart = 'Pie';
     $('#container').highcharts({
             credits: {
               enabled: false
@@ -989,10 +984,6 @@ angular.module('starter.controllers', [])
             }]
         });
 
-    $scope.Para.secondContainer = '';
-    if (secondPieLoaded == true) 
-      return;
-    
     $('#container_2').highcharts({
             credits: {
               enabled: false
@@ -1027,7 +1018,8 @@ angular.module('starter.controllers', [])
   }
 
   $scope.showLine = function() {
-    $scope.Para.secondContainer = 'display:none';
+    if ($scope.currentChart == 'Line') return;
+    $scope.currentChart = 'Line';
 
     $('#container').highcharts({
         chart: {
@@ -1080,7 +1072,8 @@ angular.module('starter.controllers', [])
   }
 
   $scope.showColumn = function() {
-    $scope.Para.secondContainer = 'display:none';
+    if ($scope.currentChart == 'Column') return;
+    $scope.currentChart = 'Column';
 
     $('#container').highcharts({
                 chart: {
@@ -1219,6 +1212,7 @@ angular.module('starter.controllers', [])
 
 .controller('monthCountCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout) {
   $scope.Para = {};
+  $scope.currentChart = '';
 
   $scope.getData = function() {
     var url = 'http://lwf1993.sinaapp.com/count/monthCount.php?userID='+$rootScope.userID;
@@ -1255,6 +1249,8 @@ angular.module('starter.controllers', [])
   }
 
   $scope.showColumn = function() {
+    if ($scope.currentChart == 'Column') return;
+    $scope.currentChart = 'Column';
     $('#container').highcharts({
         credits: {
           enabled: false
@@ -1301,6 +1297,8 @@ angular.module('starter.controllers', [])
   }
 
   $scope.showLine = function() {
+    if ($scope.currentChart == 'Line') return;
+    $scope.currentChart = 'Line';
     $('#container').highcharts({
       credits: {
         enabled: false
