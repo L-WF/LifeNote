@@ -3,7 +3,7 @@ angular.module('starter.controllers', [])
 .controller('tabsCtrl', function($scope) {
 })
 
-.controller('homeCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout, $ionicSlideBoxDelegate) {
+.controller('homeCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicPopup, $timeout, $ionicSlideBoxDelegate, $cordovaGeolocation) {
 
   $scope.Para = {};
   $scope.Para.budgetData = false;
@@ -140,6 +140,7 @@ angular.module('starter.controllers', [])
 
   //在进入的时候加载数据
   $scope.$on('$ionicView.enter', function() {
+
     if ($rootScope.city == '')
     {
       $http.get('http://api.map.baidu.com/location/ip?ak=9ffc8LPKQ8PcfjDPAcu3D8WL&t='+(new Date()).getTime())
@@ -229,9 +230,9 @@ angular.module('starter.controllers', [])
 
   $scope.addType = function(isPay) {
     $scope.newType = {};
-    var nameRegex = /[&#'";!！@$]/;
+    var nameRegex = /[&#'";!！ @$]/;
     var myPopup = $ionicPopup.show({
-      template: '<input type="text"  maxlength="12" ng-model="newType.name" >',
+      template: '<input type="text" placeholder="888.88" maxlength="12" ng-model="newType.name" >',
       title: '新增类型',
       subTitle: '不支持特殊符号',
       scope: $scope,
@@ -241,8 +242,7 @@ angular.module('starter.controllers', [])
           text: '<b>提交</b>',
           type: 'button-positive',
           onTap: function(e) {
-            if (Boolean($scope.newType.name) == false || nameRegex.test($scope.newType.name)) {
-              //don't allow the user to close unless he enters wifi password
+            if (Boolean($scope.newType.name) == false || nameRegex.test($scope.newType.name) == true) {
               e.preventDefault();
             } 
             else {
@@ -503,12 +503,35 @@ angular.module('starter.controllers', [])
   $scope.incomeTypes = [];
   $scope.payTypes = [];
 
+  $scope.locations = [{"id":"0","name":"当前位置","detail":"","long":"","lat":""},{"id":"none","name":"不记录位置","detail":"","long":"","lat":""}];
+  $scope.Para.locationSelected = $scope.locations[0];
+
   $scope.showAlert = function(title,text) {
      var alertPopup = $ionicPopup.alert({
        title: title,
        template: text
      });
    };
+
+  $scope.getLocations = function() {
+    $http.get('http://lwf1993.sinaapp.com/address/locations.php?userID='+$rootScope.userID)
+      .success(function(data) {
+        if (data == "error")
+        {
+        }
+        else if (data == "empty")
+        {
+        }
+        else
+        {
+          for (var i in data)
+          {
+            $scope.locations.push(data[i]);
+          }
+  
+        }
+      })
+  }
 
   $scope.getData = function() {
     $http.get('http://lwf1993.sinaapp.com/type_budget/typeAndBudget.php?typeOnly=1&userID='+$rootScope.userID)
@@ -542,6 +565,8 @@ angular.module('starter.controllers', [])
   }
 
   $scope.request = function(url) {
+    $scope.newAddress = {};
+
     $ionicLoading.show({
       template: '<ion-spinner icon="android"></ion-spinner>'
     });
@@ -556,9 +581,58 @@ angular.module('starter.controllers', [])
         {
           $scope.Para.amount = "";
           $scope.Para.selectedID = "";
-          $ionicLoading.hide();
-          $scope.showAlert("完成","操作成功 !");
-          
+          if ( $scope.Para.locationSelected.id != '0')
+          {
+            if ( $scope.Para.locationSelected.id != "none" )
+              $http.get('http://lwf1993.sinaapp.com/address/addFrequency.php?addressID='+$scope.Para.locationSelected.id);
+            $ionicLoading.hide();
+          }
+          else if ($rootScope.long != '' & $rootScope.lat != '')
+          {
+            $http.get('http://api.map.baidu.com/geocoder/v2/?output=json&ak=9ffc8LPKQ8PcfjDPAcu3D8WL&location='+$rootScope.lat+','+$rootScope.long)
+            .success(function(data){
+              if (data.status == 0)
+              {
+                var nameRegex = /[&#'";!！ @$]/;
+                var myPopup = $ionicPopup.show({
+                  template: '<input type="text" placeholder="输入位置名称，不支持特殊符号" maxlength="12" ng-model="newAddress.name" >',
+                  title: '保存当前位置？',
+                  subTitle: data.result.formatted_address + '<br/>' + data.result.sematic_description,
+                  scope: $scope,
+                  buttons: [
+                    { text: '取消' },
+                    {
+                      text: '<b>确认</b>',
+                      type: 'button-positive',
+                      onTap: function(e) {
+                        if (Boolean($scope.newAddress.name) == false || nameRegex.test($scope.newAddress.name) == true) 
+                        {
+                          //don't allow the user to close unless he enters wifi password
+                          e.preventDefault();
+                        } 
+                        else
+                        {
+                          $http.get('http://lwf1993.sinaapp.com/address/addAddress.php?userID='+$rootScope.userID+
+                                    '&long='+$rootScope.long+'&lat='+$rootScope.lat+
+                                    '&name='+$scope.newAddress.name+
+                                    '&detail='+data.result.formatted_address+data.result.sematic_description);
+                        }
+                      }
+                    }
+                  ]
+                });
+              }
+            })
+            .then(function() {
+              $ionicLoading.hide();
+            });
+          }
+          else
+          {
+            $ionicLoading.hide();
+            if ( $scope.Para.locationSelected.id == '0')
+              $scope.showAlert('提示','建议开启GPS！');
+          }
         }
       })
       .error(function() {
@@ -580,6 +654,7 @@ angular.module('starter.controllers', [])
       $ionicLoading.show({
         template: '<ion-spinner icon="android"></ion-spinner>'
       });
+      $scope.getLocations();
       $scope.getData();
     }
   });
@@ -592,7 +667,14 @@ angular.module('starter.controllers', [])
   }
 
   $scope.submit = function() {
-    $scope.request('http://lwf1993.sinaapp.com/records/addRecord.php?amount='+$scope.Para.amount+'&typeID='+$scope.Para.selectedID+'&userID='+$rootScope.userID+'&isPay='+$scope.Para.isPay);
+    var url = 'http://lwf1993.sinaapp.com/records/addRecord.php?amount='+$scope.Para.amount+'&typeID='+$scope.Para.selectedID +
+              '&userID='+$rootScope.userID+'&isPay='+$scope.Para.isPay;
+    if ( $scope.Para.locationSelected.id != '0')
+      url += '&long='+$scope.Para.locationSelected.long+'&lat='+$scope.Para.locationSelected.lat;
+    else
+      url += '&long='+$rootScope.long+'&lat='+$rootScope.lat;
+
+    $scope.request(url);
   }
 })
 
@@ -1557,6 +1639,98 @@ angular.module('starter.controllers', [])
         $ionicLoading.hide();
         $state.go('app.homePage');
       }
+    }
+  });
+})
+
+.controller('addressCtrl', function($scope, $state, $ionicLoading, $ionicPopup, $rootScope, $http, $ionicScrollDelegate) {
+  $scope.Para = {};
+  $scope.Para.imgURL = '';
+  $scope.Para.showMap = true;
+  $scope.Para.width = 0;
+  $scope.Para.spinnerWidth = 0;
+  $scope.locations = [];
+
+  $scope.deleteLocation = function(id) {
+    var confirmPopup = $ionicPopup.confirm({
+        title: '<strong>警告</strong>',
+        template: '确定要删除这一记录吗？',
+        okText: '是',
+        cancelText: '否'
+      });
+      confirmPopup.then(function (res) {
+        if (res) {
+          $http.get('http://lwf1993.sinaapp.com/address/deleteLocation.php?addressID='+id+'&userID='+$rootScope.userID)
+            .success(function(data) {
+              if (data == "success")
+                $scope.getLocationData();
+            })
+        } 
+      });
+  }
+
+  $scope.getImgURL = function() {
+    var url = 'http://api.map.baidu.com/staticimage?',
+        labels = '',
+        labelStyles = '';
+
+    url += 'center=' + $scope.locations[0].long + ',' + $scope.locations[0].lat;
+    url += '&width=1024&height=1024&zoom=15';
+
+    for (var i in $scope.locations)
+    {
+      labels += $scope.locations[i].long + ',' + $scope.locations[i].lat;
+      labelStyles += encodeURIComponent($scope.locations[i].name) + ',1,14,0xffffff,0x000fff,0';
+      if ( i != $scope.locations.length-1 )
+      {
+        labels += '|';
+        labelStyles += '|';
+      }
+    }
+
+    url += '&labels=' + labels;
+    url += '&labelStyles=' + labelStyles;
+
+    $scope.Para.imgURL = url;
+    $ionicScrollDelegate.$getByHandle('map').scrollTo(350,350);
+  }
+
+  $scope.getLocationData = function() {
+    $ionicLoading.show({
+      template: '<ion-spinner icon="android"></ion-spinner>'
+    });
+
+    $http.get('http://lwf1993.sinaapp.com/address/locations.php?userID='+$rootScope.userID)
+      .success(function(data) {
+        if (data == "error")
+        {
+        }
+        else if (data == "empty")
+        {
+          $scope.locations = [];
+          $scope.Para.showMap = false;
+        }
+        else
+        {
+          $scope.locations = data;
+          $scope.getImgURL();
+        }
+      })
+      .then(function(){
+        $ionicLoading.hide();
+      });
+  }
+
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
+
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      $scope.getLocationData();
     }
   });
 })

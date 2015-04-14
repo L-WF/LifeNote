@@ -4,9 +4,9 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers'])
+angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
 
-.run(function($ionicPlatform, $ionicPopup, $location) {
+.run(function($ionicPlatform, $ionicPopup, $location, $rootScope, $cordovaGeolocation, $http) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -18,6 +18,31 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       StatusBar.styleDefault();
     }
     
+  });
+
+  //获取位置信息
+  $rootScope.long = ''; //记录经纬度
+  $rootScope.lat = '';
+  var watchOptions = {
+    maximumAge : 60000,
+    frequency : 60000,
+    timeout : 300000,
+    enableHighAccuracy: true // may cause errors if true
+  };
+  var watch = $cordovaGeolocation.watchPosition(watchOptions);
+  watch.then(
+    null,
+    function(err) {
+    },
+    function(position) {
+      $http.get('http://api.map.baidu.com/ag/coord/convert?from=0&to=4&x='+position.coords.longitude+'&y='+position.coords.latitude+'&t='+(new Date()).getTime())
+      .success(function(data){
+        if (data.error == 0)
+        {
+          $rootScope.long = base64decode(data.x);
+          $rootScope.lat = base64decode(data.y);
+        }
+      });
   });
 
   //注册手机返回按钮的事件
@@ -124,6 +149,15 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       'menuContent': {
         templateUrl: "templates/monthCount.html",
         controller: 'monthCountCtrl'
+      }
+    }
+  })
+  .state('app.address', {
+    url: "/address",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/address.html",
+        controller: 'addressCtrl'
       }
     }
   })

@@ -10,6 +10,13 @@
           <span class="input-label">数额</span>
           <input type="tel" placeholder="支持两位小数！" maxlength="12" ng-model="Para.amount" ng-pattern="/^\d+(\.\d{1,2})?$/" required>
         </label>
+        <label class="item item-input item-select">
+          <div class="input-label">
+            位置
+          </div>
+          <select ng-model="Para.locationSelected" ng-options="opt as opt.name for opt in locations">
+          </select>
+        </label>
       </div>
     </form>
     <div >

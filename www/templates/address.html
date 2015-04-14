@@ -1,0 +1,23 @@
+<ion-view view-title="地址">
+  <ion-content>
+
+  	<ion-scroll delegate-handle="map" zooming="true" direction="xy" style="height: 400px; margin: 10px 10px ; text-align:center; vertical-align:center;" 
+  				ng-show="Para.showMap">
+  		<!-- <div style="margin:195px" ng-show="Para.showSpinner">
+        	<ion-spinner icon="android" ></ion-spinner>
+  		</div> -->
+  	  	<img height="1024px" width="1024px"  src="{{Para.imgURL}}">
+ 	</ion-scroll>
+	<div class="list" style="margin-top:-10px">
+      <div class="card"  ng-repeat="item in locations">
+        <div class="item item-divider item-icon-right">
+           {{item.name}}
+           <i class="icon ion-android-remove-circle positive" ng-click="deleteLocation({{item.id}})"></i>
+        </div>
+        <div class="item item-text-wrap">
+           {{item.detail}}
+        </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
