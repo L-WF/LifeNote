@@ -15,13 +15,33 @@
         <div class="item item-divider">
            {{item.date}}
         </div>
-        <div class="item item-text-wrap item-icon-left" style="background-color:#33cd5f;color:black">
+
+        <div class="item item-text-wrap item-icon-left" style="background-color:#33cd5f;color:black"
+             ng-click="toggleGroup(item.date + '-0')" ng-class="{active: isGroupShown(item.date + '-0')}">
            <i class="icon ion-ios-plus-empty"></i>
            收入<div style="float:right">${{item.income}}</div>
         </div>
-        <div class="item item-text-wrap item-icon-left" style="background-color:#f0b840;color:black">
+        <div class="item item-accordion"
+             style="background-color:#33cd5f;color:black;"
+             ng-repeat="incomeListItem in item.incomeListItems"
+             ng-show="isGroupShown(item.date + '-0')">
+          <i class="icon ion-ios-plus-empty" style="padding-left:7px"></i>
+          <span style="padding-left:20px">{{incomeListItem.typeName}}</span>
+          <div style="float:right">${{incomeListItem.income}}</div>
+        </div>
+
+        <div class="item item-text-wrap item-icon-left" style="background-color:#f0b840;color:black"
+             ng-click="toggleGroup(item.date + '-1')" ng-class="{active: isGroupShown(item.date + '-1')}">
            <i class="icon ion-ios-minus-empty"></i>
           支出<div style="float:right">${{item.pay}}</div>
+        </div>
+        <div class="item item-accordion"
+             style="background-color:#f0b840;color:black"
+             ng-repeat="payListItem in item.payListItems"
+             ng-show="isGroupShown(item.date + '-1')">
+          <i class="icon ion-ios-minus-empty" style="padding-left:7px"></i>
+          <span style="padding-left:20px">{{payListItem.typeName}}</span>
+          <div style="float:right">${{payListItem.pay}}</div>
         </div>
       </div>
     </div>

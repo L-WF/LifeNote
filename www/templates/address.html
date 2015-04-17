@@ -1,5 +1,14 @@
 <ion-view view-title="地址">
   <ion-content>
+      <div class="card" ng-show="Para.showCurrentPosition">
+        <div class="item item-divider item-icon-right">
+           当前位置
+           <i class="icon ion-android-add-circle positive" ng-click="addAddress()"></i>
+        </div>
+        <div class="item item-text-wrap">
+           {{currentPosition.detail}}
+        </div>
+      </div>
 
   	<ion-scroll delegate-handle="map" zooming="true" direction="xy" style="height: 400px; margin: 10px 10px ; text-align:center; vertical-align:center;" 
   				ng-show="Para.showMap">
