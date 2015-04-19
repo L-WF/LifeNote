@@ -1030,7 +1030,6 @@ angular.module('starter.controllers', [])
   }
 
   $scope.showPie = function() {
-    if ($scope.currentChart == 'Pie') return;
     $scope.currentChart = 'Pie';
     $('#container').highcharts({
             credits: {
@@ -1098,7 +1097,6 @@ angular.module('starter.controllers', [])
   }
 
   $scope.showLine = function() {
-    if ($scope.currentChart == 'Line') return;
     $scope.currentChart = 'Line';
 
     $('#container').highcharts({
@@ -1152,7 +1150,6 @@ angular.module('starter.controllers', [])
   }
 
   $scope.showColumn = function() {
-    if ($scope.currentChart == 'Column') return;
     $scope.currentChart = 'Column';
 
     $('#container').highcharts({

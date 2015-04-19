@@ -1,12 +1,6 @@
 <ion-view view-title="Home">
   <ion-content>
-  	<div class="button-bar padding-left padding-right padding-top" style="margin-bottom:-10px">
-			<a class="button button-full icon-right ion-calculator  button-positive" ng-click="go('app.budget')">预算</a>
-			<a class="button button-full icon-right ion-compose  button-positive" ng-click="go('app.addRecord')">新记录</a>
-			<a class="button button-full icon-right ion-clipboard  button-positive" ng-click="go('app.count')">统计</a>
-  	</div>
-
-	<div class="card" style="margin-bottom:0px" ng-show="Para.showWeather" ng-click="go('app.weather')">
+	<div class="card" style="margin-top:15px; margin-bottom:5px" ng-show="Para.showWeather" ng-click="go('app.weather')">
 	  	<div class="item" style="height:50px">
 	  		<div style="float:left;"><font size="4">{{Para.city}}：{{Para.temp}}</font>
 	  		</div>
@@ -15,7 +9,24 @@
 	  	</div>
 	</div>
 
-  	<ion-slide-box show-pager="true" does-continue="true" auto-play="true" slide-interval="2000"  on-slide-changed="selectIndex($index)" style="margin-bottom:-20px">
+  	<div class="button-bar padding-left padding-right" style="margin-bottom:-21px">
+			<a class="button button-full icon-right ion-calculator  button-stable"  ng-click="go('app.budget')">预算</a>
+			<a class="button button-full icon-right ion-compose  button-stable" ng-click="go('app.addRecord')">新记录</a>
+			<a class="button button-full icon-right ion-clipboard  button-stable" ng-click="go('app.count')">统计</a>
+  	</div>
+  	<div class="button-bar padding-left padding-right" style="margin-bottom:-21px">
+			<a class="button button-full icon-right ion-location  button-stable" ng-click="go('app.address')">地址</a>
+			<a class="button button-full icon-right ion-android-calendar  button-stable" ng-click="go('app.monthCount')">月统计</a>
+			<a class="button button-full icon-right ion-android-map  button-stable" ng-click="go('app.map')">地图</a>
+  	</div>
+  	<div class="button-bar padding-left padding-right" style="margin-bottom:-15px">
+			<a class="button button-full icon-right ion-social-rss  button-stable" ng-click="go('app.news')">新闻</a>
+			<a class="button button-full icon-right ion-android-folder-open  button-stable" ng-click="go('app.records')">全记录</a>
+			<a class="button button-full icon-right ion-ios-partlysunny  button-stable" ng-click="go('app.weather')">天气</a>
+  	</div>
+
+
+  	<ion-slide-box show-pager="true" does-continue="true" auto-play="true" slide-interval="2000"  on-slide-changed="selectIndex($index)" style="margin-bottom:-25px">
 
 	  	<ion-slide ng-repeat="item in budgetItems">
 		    <div class="card">
@@ -39,11 +50,11 @@
   	</ion-slide-box>
 
 	<div class="list">
-	<div class="card"  ng-repeat="item in recordItems">
+	<div class="card"  ng-repeat="item in recordItems" style="margin-bottom:-5px">
 		<div class="item item-divider">
 		   {{item.time}}
 		</div>
-		<div class="item item-text-wrap" style="background-color:#{{item.isPay==0?'33cd5f':'f0b840'}};color:black">
+		<div class="item item-text-wrap" style="background-color:#{{item.isPay==0?'33cd5f':'f0b840'}};color:black;">
 		   {{item.typeName}}<div style="float:right">${{item.amount}}</div>
 		</div>
 	</div>
