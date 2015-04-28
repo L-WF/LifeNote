@@ -1,0 +1,113 @@
+<ion-view view-title="股市">
+  <ion-content>
+	  <ion-refresher
+	    pulling-text="Pull to refresh..."
+	    on-refresh="doRefresh()"
+	    spinner="android" >
+	  </ion-refresher>
+
+	  <script id="my-modal.html" type="text/ng-template">
+		  <ion-view>
+		    <ion-content style='margin:0 auto; height:565px; width:300px;' scrollbar-y=false scrollbar-x=false>
+			     <div id='img' >
+			     <img src='{{Para.imgURL}}' width='545' height='300' alt='' id='myimg' />
+			     </div>
+			  </ion-content>
+		  </ion-view>
+		</script>
+
+		<div ng-repeat="item in market">
+			<div class="list padding">
+			  <div class="item item-divider">
+			    {{item.retData.stockinfo.code}}&nbsp;:&nbsp;{{item.retData.stockinfo.name}}
+			  </div>
+			  <div class="item item-divider">
+			    {{item.retData.stockinfo.date}}&nbsp;{{item.retData.stockinfo.time}}<div style="float:right">{{item.retData.stockinfo.currentPrice}}</div>
+			  </div>
+			  <div class="item item-divider">
+			    昨日收盘: {{item.retData.stockinfo.closingPrice}}<div style="float:right">今日开盘: {{item.retData.stockinfo.OpenningPrice}}</div>
+			  </div>
+			  <div class="item item-divider">
+			    今日最低: {{item.retData.stockinfo.lPrice}}<div style="float:right">今日最高: {{item.retData.stockinfo.hPrice}}</div>
+			  </div>
+			</div>
+
+		  <div class="button-bar" style="margin-top:-29px; padding-left:9px; padding-right:9px">
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.minurl}}')">分时</a>
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.dayurl}}')">日</a>
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.weekurl}}')">周</a>
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.monthurl}}')">月</a>
+			</div>
+		</div>
+
+		<div ng-repeat="item in focus">
+			<div class="list padding">
+			  <div class="item item-divider item-icon-right">
+			    {{item.retData.stockinfo.code}}&nbsp;:&nbsp;{{item.retData.stockinfo.name}}
+			    <i class="icon ion-android-remove-circle positive" ng-click="deleteFocus('{{item.retData.stockinfo.code}}')"></i>
+			  </div>
+			  <div class="item item-divider">
+			    {{item.retData.stockinfo.date}}&nbsp;{{item.retData.stockinfo.time}}<div style="float:right">{{item.retData.stockinfo.currentPrice}}</div>
+			  </div>
+			  <div class="item item-divider">
+			    昨日收盘: {{item.retData.stockinfo.closingPrice}}<div style="float:right">今日开盘: {{item.retData.stockinfo.OpenningPrice}}</div>
+			  </div>
+			  <div class="item item-divider">
+			    今日最低: {{item.retData.stockinfo.lPrice}}<div style="float:right">今日最高: {{item.retData.stockinfo.hPrice}}</div>
+			  </div>
+			</div>
+
+		  <div class="button-bar" style="margin-top:-29px; padding-left:9px; padding-right:9px">
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.minurl}}')">分时</a>
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.dayurl}}')">日</a>
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.weekurl}}')">周</a>
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.monthurl}}')">月</a>
+			</div>
+		</div>
+
+    <div ng-repeat="item in queryStock" ng-show="Para.showQuery">
+			<div class="list padding">
+			  <div class="item item-divider item-icon-right">
+			    {{item.retData.stockinfo.code}}&nbsp;:&nbsp;{{item.retData.stockinfo.name}}
+			    <i class="icon ion-android-add-circle positive" ng-click="addFocus('{{item.retData.stockinfo.code}}')"></i>
+			  </div>
+			  <div class="item item-divider">
+			    {{item.retData.stockinfo.date}}&nbsp;{{item.retData.stockinfo.time}}
+			    <div style="float:right">{{item.retData.stockinfo.currentPrice}}</div>
+			  </div>
+			  <div class="item item-divider">
+			    昨日收盘: {{item.retData.stockinfo.closingPrice}}<div style="float:right">今日开盘: {{item.retData.stockinfo.OpenningPrice}}</div>
+			  </div>
+			  <div class="item item-divider">
+			    今日最低: {{item.retData.stockinfo.lPrice}}<div style="float:right">今日最高: {{item.retData.stockinfo.hPrice}}</div>
+			  </div>
+			</div>
+
+		  <div class="button-bar" style="margin-top:-29px; padding-left:9px; padding-right:9px">
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.minurl}}')">分时</a>
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.dayurl}}')">日</a>
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.weekurl}}')">周</a>
+			  <a class="button button-positive" ng-click="openModal('{{item.retData.klinegraph.monthurl}}')">月</a>
+			</div>
+		</div>
+
+		<div class="button-bar padding-top padding-left padding-right">
+      <a class="button button-full" ng-class="{'button-positive': Para.currentMarket=='sz'}" ng-click="changeMarket('sz')">深市</a>
+      <a class="button button-full" ng-class="{'button-positive': Para.currentMarket=='sh'}" ng-click="changeMarket('sh')">沪市</a>
+    </div>
+    <form role="form" name="stockForm" novalidate>
+      <div class="list padding-left padding-right">
+        <label class="item item-input">
+          <span class="input-label">股票代码</span>
+          <input type="tel" placeholder="六位数字！" maxlength="6" ng-model="Para.queryStockCode" ng-pattern="/^\d{6}$/" required>
+        </label>
+      </div>
+    </form>
+    <div class="padding-left padding-right">
+      <button class="button button-block button-positive" ng-disabled="stockForm.$invalid" ng-click="submit()">
+        查询
+      </button>
+    </div>
+
+  </ion-content>
+</ion-view>

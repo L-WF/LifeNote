@@ -1,9 +1,9 @@
 <ion-view view-title="地图">
 	<ion-content>
     <div class="button-bar padding-left padding-right padding-top" ng-show="Para.showButtons">
-      <a class="button" ng-class="{'button-positive': Para.incomeHeatShown}" ng-click="incomeHeatForMap()">收入分布</a>
-      <a class="button" ng-class="{'button-positive': Para.payHeatShown}" ng-click="payHeatForMap()">支出分布</a>
-      <a class="button" ng-class="{'button-positive': Para.addressShown}" ng-click="addressForMap()">常用地址</a>
+      <a class="button" ng-class="{'button-positive': Para.incomeHeatShown}" ng-click="incomeHeatForMap()" ng-disabled="Para.incomeHeatAbled == false">收入分布</a>
+      <a class="button" ng-class="{'button-positive': Para.payHeatShown}" ng-click="payHeatForMap()" ng-disabled="Para.payHeatAbled == false">支出分布</a>
+      <a class="button" ng-class="{'button-positive': Para.addressShown}" ng-click="addressForMap()" ng-disabled="Para.addressAbled == false">常用地址</a>
     </div>
 		<ion-scroll zooming="false"  style="height: 600px; margin: 10px 10px ;">
 			<div id='container' class="mapContainer"></div>

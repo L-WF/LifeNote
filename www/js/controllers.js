@@ -1821,8 +1821,9 @@ angular.module('starter.controllers', [])
 })
 
 .controller('mapCtrl', function($scope, $state, $ionicPopup, $ionicLoading, $rootScope, $http) {  
-  $rootScope.long = '116.15301464485';
-  $rootScope.lat = '23.30965086029';
+  //$rootScope.long = '116.15301464485';
+  //$rootScope.lat = '23.30965086029';
+  //$rootScope.city="揭阳市";
   $scope.incomeHeatData = [];
   $scope.incomeHeatMax = 0;
   $scope.payHeatData = [];
@@ -1835,16 +1836,24 @@ angular.module('starter.controllers', [])
   $scope.Para.payHeatShown = false;
   $scope.Para.addressShown = false;
 
+  $scope.Para.incomeHeatAbled = false;
+  $scope.Para.payHeatAbled = false;
+  $scope.Para.addressAbled = false;
+
   $scope.showHeat = function(type) {
     //,"gradient":{.2:'rgb(0, 255, 0)',.5:'rgb(0, 205, 0)',.8:'rgb(0, 139, 0)'}
     incomeHeat = new BMapLib.HeatmapOverlay({"radius":20});
     map.addOverlay(incomeHeat);
     incomeHeat.setDataSet({data:$scope.incomeHeatData,max:$scope.incomeHeatMax});
+    incomeHeat.hide();
+    $scope.Para.incomeHeatAbled = true;
     
     //,"gradient":{.2:'rgb(255, 255, 0)',.5:'rgb(238, 238, 0)',.8:'rgb(255, 215, 0)'}
     payHeat = new BMapLib.HeatmapOverlay({"radius":20});
     map.addOverlay(payHeat);
     payHeat.setDataSet({data:$scope.payHeatData,max:$scope.payHeatMax});
+    payHeat.hide();
+    $scope.Para.payHeatAbled = true;
   }
 
   $scope.getHeatData = function() {
@@ -1867,8 +1876,6 @@ angular.module('starter.controllers', [])
           $scope.payHeatMax = $scope.payHeatData[0].count;   
 
         $scope.showHeat();
-        incomeHeat.hide();
-        payHeat.hide();
       }
     });
   }
@@ -1914,6 +1921,7 @@ angular.module('starter.controllers', [])
         if (data != "error" && data != "empty")
         {
           $scope.locations = data;
+          $scope.Para.addressAbled = true;
         }
       });
   }
@@ -1961,11 +1969,9 @@ angular.module('starter.controllers', [])
       map.clearOverlays();
       var marker = new BMap.Marker($scope.currentPoint);  // 创建标注
       map.addOverlay(marker);               // 将标注添加到地图中
-      marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+      //marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
 
       $scope.showHeat();
-      incomeHeat.hide();
-      payHeat.hide();
 
       if ($scope.Para.incomeHeatShown == true)
         incomeHeat.show();
@@ -1984,17 +1990,23 @@ angular.module('starter.controllers', [])
     $scope.Para.showButtons = true;
 
     map = new BMap.Map("container", {enableMapClick:false});
-    myGeo = new BMap.Geocoder();
-    myGeo.getPoint($rootScope.city, function(point){
+    geoc = new BMap.Geocoder();
+    geoc.getPoint($rootScope.city, function(point){
       if (point) {
         $scope.currentPoint = point;
         map.centerAndZoom(point, 11);
 
         var marker = new BMap.Marker(point);  // 创建标注
         map.addOverlay(marker);               // 将标注添加到地图中
-        marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+        //marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+
+        $scope.getLocationData();
+        $scope.getHeatData();
       }
     });
+
+    map.addEventListener("click", $scope.showInfo);
+
     map.enableScrollWheelZoom();
   }
 
@@ -2071,9 +2083,12 @@ angular.module('starter.controllers', [])
         map.addEventListener("click", $scope.showInfo);
 
         var marker = new BMap.Marker(point);  // 创建标注
-        marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+        //marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
         map.addOverlay(marker);               // 将标注添加到地图中
         map.enableScrollWheelZoom();
+
+        $scope.getLocationData();
+        $scope.getHeatData();
       }
       else if ($rootScope.city == '')
       {
@@ -2091,13 +2106,192 @@ angular.module('starter.controllers', [])
         $scope.showMap();
       }
 
-      $scope.getLocationData();
-
-      $scope.getHeatData();
       /*if (Boolean($rootScope.city) == false)
       {
         $state.go('app.homePage');
       }*/
+    }
+  });
+})
+
+.controller('stockCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicModal) {
+  $scope.Para = {};
+  $scope.Para.imgURL = '';
+  $scope.Para.currentMarket = 'sz';
+  $scope.Para.queryStockCode = '';
+  $scope.Para.showQuery = false;
+
+  $scope.refreshing = false;
+  $scope.marketRefresh = false;
+  $scope.focusRefresh = false;
+
+  $scope.market = [];
+  $scope.focus = [];
+  $scope.queryStock = [];
+
+  $scope.changeMarket = function(market) {
+    $scope.Para.currentMarket = market;
+  }
+
+  function rotate(){
+    var img = $('#img').css('rotate', 90);
+  }
+
+  $scope.doRefresh = function() {
+    if ($scope.refreshing == false)
+    {
+      $scope.refreshing = true;
+      $scope.getMarketData();
+      $scope.getFocusData();
+      $scope.Para.showQuery = false;
+      $scope.Para.currentMarket = 'sz';
+      $scope.Para.queryStockCode = '';
+      $scope.queryStock = [];
+    }
+  };
+
+  $scope.addFocus = function(code) {
+    $ionicLoading.show({
+      template: '<ion-spinner icon="android"></ion-spinner>'
+    });
+    $http.get('http://lwf1993.sinaapp.com/stock/addFocus.php?userID='+$rootScope.userID+'&code='+code)
+    .success(function(data) {
+      if (data == 'success')
+      {
+        $scope.focus.push($scope.queryStock[0]);
+        $scope.queryStock = [];
+        $scope.Para.showQuery = false;
+      }
+    })
+    .then(function() {
+      $ionicLoading.hide();
+    });
+  }
+
+  $scope.deleteFocus = function(code) {
+    $ionicLoading.show({
+      template: '<ion-spinner icon="android"></ion-spinner>'
+    });
+    $http.get('http://lwf1993.sinaapp.com/stock/deleteFocus.php?userID='+$rootScope.userID+'&code='+code)
+    .success(function(data) {
+      if (data == 'success')
+      {
+        for (var i in $scope.focus)
+        {
+          if ($scope.focus[i].retData.stockinfo.code == code)
+          {
+            $scope.focus.splice(i,1);
+            break;
+          }
+        }
+      }
+    })
+    .then(function() {
+      $ionicLoading.hide();
+    });
+  }
+
+  $scope.submit = function() {
+    var queryCode = $scope.Para.currentMarket + $scope.Para.queryStockCode;
+    if (queryCode == 'sz399001' || queryCode == 'sh000001')
+      return;
+
+    $scope.queryStock = [];
+    $scope.Para.showQuery = false;
+    $ionicLoading.show({
+      template: '<ion-spinner icon="android"></ion-spinner>'
+    });
+    $http.get('http://apistore.baidu.com/microservice/stock?stockid=' + queryCode)
+      .success(function(data){
+        if (data.errNum == 0)
+        {
+          $scope.Para.showQuery = true;
+          $scope.queryStock.push(data);
+        }
+      })
+      .then(function() {
+        $ionicLoading.hide();
+      });
+  }
+
+  $scope.getMarketData = function() {
+    $scope.marketRefresh = false;
+    $scope.market = [];
+    var markets = ['sz399001','sh000001'];
+
+    for (var i in markets)
+    {
+      $http.get('http://apistore.baidu.com/microservice/stock?stockid='+markets[i])
+      .success(function(data){
+        if (data.errNum == 0)
+          $scope.market.push(data);
+          
+      })
+      .finally(function() {
+        $scope.marketRefresh = true;
+        if ($scope.refreshing == true && $scope.focusRefresh == true)
+          {
+            $scope.$broadcast('scroll.refreshComplete');
+            $scope.refreshing = false;
+          }
+      });
+    }
+  }
+
+
+  $scope.getFocusData = function() {
+    $scope.focusRefresh = false;
+    $scope.focus = [];
+    $http.get('http://lwf1993.sinaapp.com/stock/getFocusData.php?userID='+$rootScope.userID)
+    .success(function(data) {
+      if (data != "error" && data != "empty")
+      {
+        for (var i in data)
+        {
+          $http.get('http://apistore.baidu.com/microservice/stock?stockid='+data[i].code)
+          .success(function(stock){
+            if (stock.errNum == 0)
+              $scope.focus.push(stock);
+          });
+        }
+      }
+    })
+    .finally(function() {
+      $scope.focusRefresh = true;
+      if ($scope.refreshing == true && $scope.marketRefresh == true)
+        {
+          $scope.$broadcast('scroll.refreshComplete');
+          $scope.refreshing = false;
+        }
+    });
+  }
+
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      $ionicModal.fromTemplateUrl("my-modal.html", {
+        scope: $scope,
+        animation: 'slide-in-up'
+      }).then(function(modal) {
+        $scope.modal = modal;
+      });
+      $scope.openModal = function(imgURL) {
+        $scope.Para.imgURL = imgURL;
+        $scope.modal.show();
+        rotate();
+      };
+      //Cleanup the modal when we're done with it!
+      $scope.$on('$destroy', function() {
+        $scope.modal.remove();
+      });
+
+      $scope.getMarketData();
+      $scope.getFocusData();
     }
   });
 })

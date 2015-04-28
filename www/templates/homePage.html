@@ -1,7 +1,7 @@
 <ion-view view-title="Home">
-  <ion-content>
-	<div class="card" style="margin-top:15px; margin-bottom:5px" ng-show="Para.showWeather" ng-click="go('app.weather')">
-	  	<div class="item" style="height:50px">
+  <ion-content style="background-color:#f8f8f8">
+	<div class="card" style="margin-top:15px; margin-bottom:5px; " ng-show="Para.showWeather" ng-click="go('app.weather')">
+	  	<div class="item" style="height:50px; background-color:#f8f8f8">
 	  		<div style="float:left;"><font size="4">{{Para.city}}：{{Para.temp}}</font>
 	  		</div>
 	  		<img src="{{Para.nightUrl}}" height="30px" width="42px" style="float:right;margin-top:-5px">
@@ -15,14 +15,14 @@
 			<a class="button button-full icon-right ion-clipboard  button-stable" ng-click="go('app.count')">统计</a>
   	</div>
   	<div class="button-bar padding-left padding-right" style="margin-bottom:-21px">
-			<a class="button button-full icon-right ion-location  button-stable" ng-click="go('app.address')">地址</a>
+			<a class="button button-full icon-right ion-android-pin  button-stable" ng-click="go('app.address')">地址</a>
 			<a class="button button-full icon-right ion-android-calendar  button-stable" ng-click="go('app.monthCount')">月统计</a>
 			<a class="button button-full icon-right ion-android-map  button-stable" ng-click="go('app.map')">地图</a>
   	</div>
   	<div class="button-bar padding-left padding-right" style="margin-bottom:-15px">
 			<a class="button button-full icon-right ion-social-rss  button-stable" ng-click="go('app.news')">新闻</a>
 			<a class="button button-full icon-right ion-android-folder-open  button-stable" ng-click="go('app.records')">全记录</a>
-			<a class="button button-full icon-right ion-ios-partlysunny  button-stable" ng-click="go('app.weather')">天气</a>
+			<a class="button button-full icon-right ion-arrow-graph-up-right  button-stable" ng-click="go('app.stock')">股市</a>
   	</div>
 
 
@@ -33,14 +33,14 @@
 			  	<div class="item item-divider item-button-right">
 			    	本月预算：{{item.typeName}}
 			  	</div>
-			  	<div class="item" >
+			  	<div class="item" style="background-color:#f8f8f8">
 			    	<div class="progress progress-striped active" >
 						<div class="progress-bar 
 						{{item.isPay==0?'progress-bar-success':'progress-bar-warning'}} 
 						{{item.proportion==1?'progress-bar-danger':''}}"  
-						style="width: {{item.proportion*100}}%;padding-top:4px">
+						style="width: {{item.proportion*100}}%; padding-top:4px;">
 			    			<span>
-			    				<font color="black" size="4">{{item.used}} / {{item.budget}} </font>
+			    				<font color="black" size="4" style="padding-left:5px">{{item.used}} / {{item.budget}} </font>
 			    			</span>
 			  			</div>
 					</div>

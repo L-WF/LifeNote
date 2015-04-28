@@ -188,6 +188,15 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
       }
     }
   })
+  .state('app.stock', {
+    url: "/stock",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/stock.html",
+        controller: 'stockCtrl'
+      }
+    }
+  })
 
   
   .state('tabs', {
