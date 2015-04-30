@@ -2295,4 +2295,58 @@ angular.module('starter.controllers', [])
     }
   });
 })
+
+.controller('chatCtrl', function($scope, $state, $ionicLoading, $rootScope, $http, $ionicFrostedDelegate, $ionicScrollDelegate) {
+  $scope.messages = [];
+  $scope.sendText = '';
+
+  var regex = /[&#'"; @$]/;
+
+  $scope.submit = function() {
+    if (Boolean($scope.sendText) == false)// || regex.test($scope.sendText) == true
+      return;
+
+    var send = {};
+    send.content = '<p>' + $scope.sendText + '</p>';
+    send.type = 1;
+    $scope.pushData(send);
+
+    $http.get('http://www.tuling123.com/openapi/api?key=3b3abcf4002c0337924ce71bb131f053&info='+encodeURIComponent($scope.sendText)+'&userid='+$rootScope.userID)
+    .success(function(data) {
+      if (data.text.indexOf('<cd.url') != -1)
+        data.text = data.text.substr(0,data.text.indexOf('<cd.url'));
+
+      var receive = {};
+      receive.content = '<p>' + data.text + '</p>';
+      receive.type = 0;
+      $scope.pushData(receive);
+    });
+    
+    $scope.sendText = '';
+  }
+
+  $scope.pushData = function(data) {
+    $scope.messages.push(data);
+
+    // Update the scroll area and tell the frosted glass to redraw itself
+    $ionicFrostedDelegate.update();
+    $ionicScrollDelegate.scrollBottom(true);
+  }
+
+  //在进入的时候加载数据
+  $scope.$on('$ionicView.enter', function() {
+    if (Boolean($rootScope.userID) == false) //判断用户是否已登陆 
+    {
+      $state.go('tabs.login');
+    }
+    else
+    {
+      var a = { content: '<p>Hala Madrid</p>',type: 0 };
+      var b = { content: '<img src="img/RMA.png" width="128px" height="128px" alt="" />',type: 0 };
+      $scope.pushData(a);
+      $scope.pushData(b);
+    }
+  });
+
+})
 ;

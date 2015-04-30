@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
+angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'ionic.contrib.frostedGlass'])
 
 .run(function($ionicPlatform, $ionicPopup, $location, $rootScope, $cordovaGeolocation, $http) {
   $ionicPlatform.ready(function() {
@@ -194,6 +194,15 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
       'menuContent': {
         templateUrl: "templates/stock.html",
         controller: 'stockCtrl'
+      }
+    }
+  })
+  .state('app.chat', {
+    url: "/chat",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/chat.html",
+        controller: 'chatCtrl'
       }
     }
   })

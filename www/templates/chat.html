@@ -1,0 +1,15 @@
+<ion-view view-title="聊天">
+	<ion-header-bar frosted-bar class="bar-frosted">
+    <h1 class="title">Blurred!</h1>
+  </ion-header-bar>
+  
+  <ion-content class="padding" start-y="120">
+    <ol class="messages">
+      <li ng-repeat="message in messages" ng-class="{'send' : message.type==1,'receive' : message.type==0}" ng-bind-html="message.content"></li>
+    </ol>
+  </ion-content>
+  <ion-footer-bar class="bar-positive">
+  		<input style="border:0px;width:100%;" placeholder=" 不支持特殊字符！"  ng-model="sendText"/>
+    <button class="button button-clear" style="width:100px;height:33px" ng-click="submit()" >发送</button>
+  </ion-footer-bar>
+</ion-view>
