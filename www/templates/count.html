@@ -1,5 +1,5 @@
 <ion-view view-title="统计">
-  <ion-content>
+  <ion-content scrollbar-y=false>
         <div class="list">
           <label class="item item-input item-select">
             <div class="input-label">
@@ -30,7 +30,7 @@
       </button>
     </div>
 
-    <div class="list">
+    <div class="list" style="margin-top:-10px; margin-bottom:0px">
       <div class="card">
         <div class="item item-divider item-icon-left">
            <i class="icon ion-ios-plus-empty"></i>
@@ -60,7 +60,7 @@
       <a class="button icon ion-pie-graph positive" ng-class="{'button-positive': currentChart=='Pie'}" ng-click="showPie()"></a>
       <a class="button icon ion-stats-bars positive" ng-class="{'button-positive': currentChart=='Column'}" ng-click="showColumn()"></a>
     </div>
-    <div style="text-align:center;margin: -10px 10px ;">
+    <div style="text-align:center;margin: -10px 10px 10px 10px ;">
       <div id="container" class="chart" >
         <ion-spinner icon="android" ng-show="Para.showSpinner"></ion-spinner>
       </div>

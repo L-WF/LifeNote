@@ -1,3 +1,15 @@
+.scroll {
+	height: 100%;
+}
+
+.mapContainer {
+	position: absolute; 
+	top: 57px;
+  bottom: 0px;
+	margin: 10px 0;
+  width: 100%;
+}
+
 /*聊天界面的样式*/
 .ionic-contrib-blur {
   overflow: hidden;
@@ -84,10 +96,7 @@
   display: block !important;
 }
 
-.mapContainer
-{
-  height: 600px;
-}
+
 
 .hideRadio
 {

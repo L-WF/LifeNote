@@ -1362,7 +1362,7 @@ angular.module('starter.controllers', [])
   $scope.showColumn = function() {
     if ($scope.currentChart == 'Column') return;
     $scope.currentChart = 'Column';
-    $('#container').highcharts({
+    $('#monthContainer').highcharts({
         credits: {
           enabled: false
         },
@@ -1410,7 +1410,7 @@ angular.module('starter.controllers', [])
   $scope.showLine = function() {
     if ($scope.currentChart == 'Line') return;
     $scope.currentChart = 'Line';
-    $('#container').highcharts({
+    $('#monthContainer').highcharts({
       credits: {
         enabled: false
       },
@@ -1989,7 +1989,7 @@ angular.module('starter.controllers', [])
   $scope.showMap = function() {
     $scope.Para.showButtons = true;
 
-    map = new BMap.Map("container", {enableMapClick:false});
+    map = new BMap.Map("mapContainer", {enableMapClick:false});
     geoc = new BMap.Geocoder();
     geoc.getPoint($rootScope.city, function(point){
       if (point) {
@@ -2074,7 +2074,7 @@ angular.module('starter.controllers', [])
       {
         $scope.Para.showButtons = true;
 
-        map = new BMap.Map("container", {enableMapClick:false});
+        map = new BMap.Map("mapContainer", {enableMapClick:false});
         point = new BMap.Point($rootScope.long, $rootScope.lat);
         $scope.currentPoint = point;
         map.centerAndZoom(point, 15);
@@ -2201,7 +2201,7 @@ angular.module('starter.controllers', [])
     $ionicLoading.show({
       template: '<ion-spinner icon="android"></ion-spinner>'
     });
-    $http.get('http://apistore.baidu.com/microservice/stock?stockid=' + queryCode)
+    $http.get('http://apistore.baidu.com/microservice/stock?stockid=' + queryCode+'&t='+(new Date()).getTime())
       .success(function(data){
         if (data.errNum == 0)
         {
@@ -2221,7 +2221,7 @@ angular.module('starter.controllers', [])
 
     for (var i in markets)
     {
-      $http.get('http://apistore.baidu.com/microservice/stock?stockid='+markets[i])
+      $http.get('http://apistore.baidu.com/microservice/stock?stockid='+markets[i]+'&t='+(new Date()).getTime())
       .success(function(data){
         if (data.errNum == 0)
           $scope.market.push(data);
@@ -2248,7 +2248,7 @@ angular.module('starter.controllers', [])
       {
         for (var i in data)
         {
-          $http.get('http://apistore.baidu.com/microservice/stock?stockid='+data[i].code)
+          $http.get('http://apistore.baidu.com/microservice/stock?stockid='+data[i].code+'&t='+(new Date()).getTime())
           .success(function(stock){
             if (stock.errNum == 0)
               $scope.focus.push(stock);
